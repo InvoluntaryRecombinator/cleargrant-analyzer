@@ -458,39 +458,6 @@ select.form-input {
   background: #fff1f2;
 }
 
-.workflow-card {
-  display: grid;
-  grid-template-columns: 2rem 1fr;
-  gap: 0.875rem;
-  border: 1px solid var(--line-soft);
-  border-radius: 8px;
-  background: #fffdf8;
-  padding: 1rem;
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease,
-    transform 120ms ease;
-}
-
-.workflow-card:hover {
-  border-color: #aacfc7;
-  background: #f5fbf8;
-  transform: translateY(-1px);
-}
-
-.workflow-index {
-  display: inline-flex;
-  height: 2rem;
-  width: 2rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  background: var(--teal-soft);
-  color: #0f3d3a;
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
 .activity-row {
   display: flex;
   align-items: center;
