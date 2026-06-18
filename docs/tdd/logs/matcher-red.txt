@@ -1,0 +1,91 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/matchGrantToProfile.test.ts (6 tests | 6 failed) 3ms
+     × marks explicit applicant type mismatches as Low Match 2ms
+     × passes when location arrays intersect 0ms
+     × marks tax status mismatches as Low Match 0ms
+     × marks explicit but unnormalized requirements as Needs Review 0ms
+     × does not punish absent requirement categories 0ms
+     × marks match fund conflicts as Low Match 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/matchGrantToProfile.test.ts > matchGrantToProfile > marks explicit applicant type mismatches as Low Match
+TypeError: matchGrantToProfile is not a function
+ ❯ utils/matchGrantToProfile.test.ts:38:20
+     36| describe("matchGrantToProfile", () => {
+     37|   it("marks explicit applicant type mismatches as Low Match", () => {
+     38|     const result = matchGrantToProfile(
+       |                    ^
+     39|       baseProfile,
+     40|       grant([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  utils/matchGrantToProfile.test.ts > matchGrantToProfile > passes when location arrays intersect
+TypeError: matchGrantToProfile is not a function
+ ❯ utils/matchGrantToProfile.test.ts:64:20
+     62|
+     63|   it("passes when location arrays intersect", () => {
+     64|     const result = matchGrantToProfile(
+       |                    ^
+     65|       baseProfile,
+     66|       grant([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  utils/matchGrantToProfile.test.ts > matchGrantToProfile > marks tax status mismatches as Low Match
+TypeError: matchGrantToProfile is not a function
+ ❯ utils/matchGrantToProfile.test.ts:88:20
+     86|
+     87|   it("marks tax status mismatches as Low Match", () => {
+     88|     const result = matchGrantToProfile(
+       |                    ^
+     89|       {
+     90|         ...baseProfile,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  utils/matchGrantToProfile.test.ts > matchGrantToProfile > marks explicit but unnormalized requirements as Needs Review
+TypeError: matchGrantToProfile is not a function
+ ❯ utils/matchGrantToProfile.test.ts:111:20
+    109|
+    110|   it("marks explicit but unnormalized requirements as Needs Review", (…
+    111|     const result = matchGrantToProfile(
+       |                    ^
+    112|       baseProfile,
+    113|       grant([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  utils/matchGrantToProfile.test.ts > matchGrantToProfile > does not punish absent requirement categories
+TypeError: matchGrantToProfile is not a function
+ ❯ utils/matchGrantToProfile.test.ts:132:20
+    130|
+    131|   it("does not punish absent requirement categories", () => {
+    132|     const result = matchGrantToProfile(baseProfile, grant([]));
+       |                    ^
+    133|
+    134|     expect(result.matchLabel).toBe("Medium Match");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  utils/matchGrantToProfile.test.ts > matchGrantToProfile > marks match fund conflicts as Low Match
+TypeError: matchGrantToProfile is not a function
+ ❯ utils/matchGrantToProfile.test.ts:140:20
+    138|
+    139|   it("marks match fund conflicts as Low Match", () => {
+    140|     const result = matchGrantToProfile(
+       |                    ^
+    141|       baseProfile,
+    142|       grant([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  02:19:11
+   Duration  129ms (transform 14ms, setup 0ms, import 20ms, tests 3ms, environment 0ms)
+
