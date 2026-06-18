@@ -11,3 +11,108 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id        String   @id
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile Profile?
+  grants  Grant[]
+}
+
+model Profile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  applicantType      String
+  organizationName   String?
+  legalStatus        String?
+  taxStatus          String?
+  country            String?
+  state              String?
+  city               String?
+  missionStatement   String?
+  focusAreas         String[]
+  populationsServed  String[]
+  projectTypes       String[]
+  hasFiscalSponsor   Boolean?
+  hasEin             Boolean?
+  hasSamRegistration Boolean?
+  hasUei             Boolean?
+  canProvideMatchFunds Boolean?
+  minimumUsefulAward Int?
+  rawProfileJson     Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Grant {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title          String?
+  funder         String?
+  sourceFileName String?
+  fileType       String?
+  deadline       DateTime?
+  awardMin       Int?
+  awardMax       Int?
+  processingStatus String @default("uploaded")
+
+  uploadedDocument UploadedDocument?
+  extractionResult ExtractionResult?
+  matchResult      MatchResult?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model UploadedDocument {
+  id      String @id @default(cuid())
+  grantId String @unique
+  grant   Grant  @relation(fields: [grantId], references: [id], onDelete: Cascade)
+
+  fileName      String
+  fileType      String
+  fileUrl       String?
+  extractedText String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExtractionResult {
+  id      String @id @default(cuid())
+  grantId String @unique
+  grant   Grant  @relation(fields: [grantId], references: [id], onDelete: Cascade)
+
+  status        String @default("pending")
+  extractedJson Json?
+  errorMessage  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MatchResult {
+  id      String @id @default(cuid())
+  grantId String @unique
+  grant   Grant  @relation(fields: [grantId], references: [id], onDelete: Cascade)
+
+  matchLabel      String
+  score           Int?
+  primaryReason   String?
+  hardNoReasons   Json?
+  needsReviewItems Json?
+  passedItems     Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
