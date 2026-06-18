@@ -24,7 +24,7 @@ export default async function OnboardingPage() {
         </div>
       </section>
 
-      <section className="form-panel">
+      <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
         <ProfileForm mode="onboarding" profile={null} />
       </section>
     </div>

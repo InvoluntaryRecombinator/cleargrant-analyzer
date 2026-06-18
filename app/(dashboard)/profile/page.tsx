@@ -43,7 +43,7 @@ export default async function ProfilePage() {
         </div>
       </section>
 
-      <section className="form-panel">
+      <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
         <ProfileForm mode={profile ? "edit" : "onboarding"} profile={formProfile} />
       </section>
     </div>

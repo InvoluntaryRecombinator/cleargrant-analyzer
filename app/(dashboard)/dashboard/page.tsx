@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FileUp, Table2, UserRound } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { getProfileForUser, requireUser } from "@/lib/auth";
@@ -34,6 +35,29 @@ export default async function DashboardPage() {
     (grant) => grant.matchResult?.matchLabel === "Needs Review",
   ).length;
   const recentGrants = grants.slice(0, 4);
+  const workflowItems = [
+    {
+      label: "Upload",
+      description: "Add PDF, DOCX, or TXT grant documents in small batches.",
+      href: "/upload",
+      action: "Start analysis",
+      icon: FileUp,
+    },
+    {
+      label: "Compare",
+      description: "Scan match labels, deadlines, awards, and extracted requirements.",
+      href: "/matrix",
+      action: "Open matrix",
+      icon: Table2,
+    },
+    {
+      label: "Refine",
+      description: "Keep profile details current so comparisons stay useful.",
+      href: "/profile",
+      action: "Edit profile",
+      icon: UserRound,
+    },
+  ];
   const location =
     [profile.city, profile.state].filter(Boolean).join(", ") ||
     profile.country ||
@@ -61,76 +85,67 @@ export default async function DashboardPage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div className="metric-panel">
+        <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Applicant type</p>
           <p className="metric-value">{profile.applicantType}</p>
           <p className="metric-note">{location}</p>
         </div>
-        <div className="metric-panel">
+        <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Documents analyzed</p>
           <p className="metric-value">{analyzedCount}</p>
           <p className="metric-note">{grants.length} total uploaded</p>
         </div>
-        <div className="metric-panel">
+        <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Needs review</p>
           <p className="metric-value">{needsReviewCount}</p>
           <p className="metric-note">Ambiguous items to inspect</p>
         </div>
-        <div className="metric-panel">
+        <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Extraction issues</p>
           <p className="metric-value">{failedCount}</p>
           <p className="metric-note">Unreadable or unsupported files</p>
         </div>
       </section>
 
-      <section className="content-panel">
-        <div className="panel-header">
+      <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between border-b border-stone-200 bg-white px-4 py-3">
           <div>
             <p className="eyebrow">Workflow</p>
             <h2 className="section-heading">Triage path</h2>
           </div>
         </div>
         <div className="grid gap-3 p-4 lg:grid-cols-3">
-          {[
-            [
-              "Upload",
-              "Add PDF, DOCX, or TXT grant documents in small batches.",
-              "/upload",
-              "Start analysis",
-            ],
-            [
-              "Compare",
-              "Scan match labels, deadlines, awards, and extracted requirements.",
-              "/matrix",
-              "Open matrix",
-            ],
-            [
-              "Refine",
-              "Keep profile details current so comparisons stay useful.",
-              "/profile",
-              "Edit profile",
-            ],
-          ].map(([label, description, href, action]) => (
-            <Link className="workflow-card" href={href} key={label}>
-              <span className="workflow-index">{label.slice(0, 1)}</span>
+          {workflowItems.map((item) => {
+            const Icon = item.icon;
+
+            return (
+            <Link
+              className="grid grid-cols-[2.25rem_1fr] gap-3 rounded-lg border border-stone-200 bg-[#fffdf8] p-4 transition hover:border-teal-200 hover:bg-teal-50/40"
+              href={item.href}
+              key={item.label}
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-teal-50 text-teal-800 ring-1 ring-teal-100">
+                <Icon aria-hidden size={18} strokeWidth={2} />
+              </span>
               <span>
                 <span className="block text-sm font-semibold text-slate-950">
-                  {label}
+                  {item.label}
                 </span>
                 <span className="mt-1 block text-sm leading-6 text-slate-600">
-                  {description}
+                  {item.description}
                 </span>
                 <span className="mt-4 inline-flex text-sm font-semibold text-teal-800">
-                  {action}
+                  {item.action}
                 </span>
               </span>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </section>
 
-      <section className="content-panel">
-        <div className="panel-header">
+      <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between gap-4 border-b border-stone-200 bg-white px-4 py-3">
           <div>
             <p className="eyebrow">Recent activity</p>
             <h2 className="section-heading">Latest documents</h2>

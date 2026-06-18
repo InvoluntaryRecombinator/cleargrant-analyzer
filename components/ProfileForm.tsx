@@ -105,10 +105,14 @@ function CheckboxGroup({
   return (
     <fieldset className="space-y-3">
       <legend className="form-label">{label}</legend>
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
         {options.map((option) => (
-          <label className="check-row" key={option}>
+          <label
+            className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40"
+            key={option}
+          >
             <input
+              className="h-4 w-4 shrink-0 accent-teal-700"
               defaultChecked={optionChecked(values, option)}
               name={name}
               type="checkbox"
@@ -145,7 +149,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
     <form action={formAction} className="profile-form">
       <input name="redirectTo" type="hidden" value={redirectTo} />
 
-      <section className="form-section">
+      <section className="grid gap-5 border-b border-stone-200 p-5">
         <div>
           <p className="eyebrow">Step 1</p>
           <h2 className="section-heading">{sectionLabel}</h2>
@@ -224,7 +228,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
         </div>
       </section>
 
-      <section className="form-section">
+      <section className="grid gap-5 border-b border-stone-200 p-5">
         <div>
           <p className="eyebrow">Step 2</p>
           <h2 className="section-heading">Location and mission</h2>
@@ -284,7 +288,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
         </div>
       </section>
 
-      <section className="form-section">
+      <section className="grid gap-6 border-b border-stone-200 p-5">
         <div>
           <p className="eyebrow">Step 3</p>
           <h2 className="section-heading">Program fit</h2>
@@ -312,47 +316,52 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
         />
       </section>
 
-      <section className="form-section">
+      <section className="grid gap-5 p-5">
         <div>
           <p className="eyebrow">Step 4</p>
           <h2 className="section-heading">Operational capacity</h2>
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-2">
-          <label className="check-row">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
             <input
+              className="h-4 w-4 shrink-0 accent-teal-700"
               defaultChecked={profile?.hasFiscalSponsor ?? false}
               name="hasFiscalSponsor"
               type="checkbox"
             />
             <span>Fiscal sponsor available</span>
           </label>
-          <label className="check-row">
+          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
             <input
+              className="h-4 w-4 shrink-0 accent-teal-700"
               defaultChecked={profile?.hasEin ?? false}
               name="hasEin"
               type="checkbox"
             />
             <span>EIN available</span>
           </label>
-          <label className="check-row">
+          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
             <input
+              className="h-4 w-4 shrink-0 accent-teal-700"
               defaultChecked={profile?.hasSamRegistration ?? false}
               name="hasSamRegistration"
               type="checkbox"
             />
             <span>SAM registration available</span>
           </label>
-          <label className="check-row">
+          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
             <input
+              className="h-4 w-4 shrink-0 accent-teal-700"
               defaultChecked={profile?.hasUei ?? false}
               name="hasUei"
               type="checkbox"
             />
             <span>UEI available</span>
           </label>
-          <label className="check-row">
+          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
             <input
+              className="h-4 w-4 shrink-0 accent-teal-700"
               defaultChecked={profile?.canProvideMatchFunds ?? false}
               name="canProvideMatchFunds"
               type="checkbox"

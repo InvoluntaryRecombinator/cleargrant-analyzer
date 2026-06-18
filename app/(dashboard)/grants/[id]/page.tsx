@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { getProfileForUser, requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { matchStatusClassName } from "@/utils/presentation";
 import type { ExtractedGrant, ExtractedRequirementCategory } from "@/utils/matchGrantToProfile";
 
 const categoryTitles: Record<ExtractedRequirementCategory, string> = {
@@ -101,15 +102,21 @@ export default async function GrantDetailPage({
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <div className="metric-panel">
+        <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Match label</p>
-          <p className="metric-value">{statusLabel}</p>
+          <span
+            className={`mt-3 inline-flex min-h-7 items-center rounded-full border px-2.5 py-1 text-xs font-bold ${matchStatusClassName(
+              statusLabel,
+            )}`}
+          >
+            {statusLabel}
+          </span>
         </div>
-        <div className="metric-panel">
+        <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Funder</p>
           <p className="metric-value">{grant.funder ?? "Not stated"}</p>
         </div>
-        <div className="metric-panel">
+        <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Extraction</p>
           <p className="metric-value">
             {extractedGrant?.extractionConfidence ??
@@ -131,11 +138,11 @@ export default async function GrantDetailPage({
         </section>
       ) : null}
 
-      <section className="content-panel">
-        <div className="panel-header">
+      <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+        <div className="border-b border-stone-200 bg-white px-4 py-3">
           <h2 className="section-heading">Match Result</h2>
         </div>
-        <div className="space-y-3 px-5 py-4 text-sm leading-6 text-slate-600">
+        <div className="px-4 py-3 text-sm leading-6 text-slate-600">
           <p>
             {extractionFailed
               ? extractionFailedText
@@ -145,29 +152,40 @@ export default async function GrantDetailPage({
       </section>
 
       {groups.map(([category, requirements]) => (
-        <section className="content-panel" key={category}>
-          <div className="panel-header">
+        <section
+          className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm"
+          key={category}
+        >
+          <div className="flex items-center justify-between border-b border-stone-200 bg-slate-50 px-4 py-3">
             <h2 className="section-heading">{categoryTitles[category]}</h2>
+            <span className="font-mono text-xs font-semibold text-slate-500">
+              {requirements.length}
+            </span>
           </div>
           <div className="divide-y divide-stone-200">
             {requirements.map((requirement, index) => (
-              <div className="space-y-3 px-5 py-4" key={`${category}-${index}`}>
-                <p className="text-sm font-medium text-slate-950">
+              <div
+                className="grid gap-3 px-4 py-3 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
+                key={`${category}-${index}`}
+              >
+                <div>
+                  <p className="text-sm font-semibold leading-6 text-slate-950">
                   {requirement.value}
-                </p>
-                <p className="text-sm leading-6 text-slate-600">
-                  {requirement.sourceQuote}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {(requirement.normalizedValues ?? []).map((value) => (
-                    <span
-                      className="rounded-md border border-stone-200 bg-stone-50 px-2 py-1 text-xs text-slate-600"
-                      key={value}
-                    >
-                      {value}
-                    </span>
-                  ))}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {(requirement.normalizedValues ?? []).map((value) => (
+                      <span
+                        className="rounded-md border border-stone-200 bg-[#fffdf8] px-2 py-1 font-mono text-xs text-slate-600"
+                        key={value}
+                      >
+                        {value}
+                      </span>
+                    ))}
+                  </div>
                 </div>
+                <blockquote className="rounded-md border-l-2 border-teal-300 bg-slate-50 px-3 py-2 font-mono text-xs leading-5 text-slate-700">
+                  {requirement.sourceQuote}
+                </blockquote>
               </div>
             ))}
           </div>
@@ -175,11 +193,11 @@ export default async function GrantDetailPage({
       ))}
 
       {!extractionFailed ? (
-        <section className="content-panel">
-          <div className="panel-header">
+        <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+          <div className="border-b border-stone-200 bg-white px-4 py-3">
             <h2 className="section-heading">Raw JSON</h2>
           </div>
-          <pre className="overflow-x-auto px-5 py-4 text-xs leading-5 text-slate-700">
+          <pre className="overflow-x-auto bg-slate-950 px-4 py-3 font-mono text-xs leading-5 text-slate-100">
             {jsonString(grant.extractionResult?.extractedJson ?? {})}
           </pre>
         </section>
