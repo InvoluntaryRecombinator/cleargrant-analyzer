@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { UploadDropzone } from "@/components/UploadDropzone";
 import { getProfileForUser, requireUser } from "@/lib/auth";
 
 export default async function UploadPage() {
@@ -16,26 +16,17 @@ export default async function UploadPage() {
       <section className="page-header">
         <div>
           <p className="eyebrow">Upload Grants</p>
-          <h1 className="page-title">Document upload comes next</h1>
+          <h1 className="page-title">Analyze grant documents</h1>
           <p className="page-description">
-            Phase 1 and 2 establish auth, profile storage, and protected
-            navigation. The upload pipeline starts after the profile flow is
-            complete.
+            Upload PDF, DOCX, or TXT files. Each document is processed
+            separately, extracted into requirement-array JSON, matched against
+            your profile, and saved to the matrix.
           </p>
         </div>
-        <Link className="secondary-button" href="/profile">
-          Review profile
-        </Link>
       </section>
 
-      <section className="empty-panel">
-        <p className="text-sm font-medium text-slate-950">
-          Supported in the next phase
-        </p>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-          PDF, DOCX, and TXT upload will connect to server-side text extraction
-          and requirement-array LLM extraction.
-        </p>
+      <section className="form-panel">
+        <UploadDropzone />
       </section>
     </div>
   );
