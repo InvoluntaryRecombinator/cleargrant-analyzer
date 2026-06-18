@@ -1,7 +1,7 @@
 import "server-only";
 
 import mammoth from "mammoth";
-import { PDFParse } from "pdf-parse";
+import PDFParser from "pdf2json";
 
 const maxExtractedChars = 120_000;
 
@@ -19,14 +19,34 @@ function normalizeWhitespace(text: string) {
 }
 
 async function extractPdfText(buffer: Buffer) {
-  const parser = new PDFParse({ data: buffer });
+  return new Promise<string>((resolve, reject) => {
+    const parser = new PDFParser(null, true);
+    let settled = false;
 
-  try {
-    const result = await parser.getText();
-    return result.text;
-  } finally {
-    await parser.destroy();
-  }
+    const finish = (callback: () => void) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      callback();
+      parser.destroy();
+    };
+
+    parser.on("pdfParser_dataError", () => {
+      finish(() => reject(new Error("Document unreadable. PDF text could not be extracted.")));
+    });
+
+    parser.on("pdfParser_dataReady", () => {
+      finish(() => resolve(parser.getRawTextContent()));
+    });
+
+    try {
+      parser.parseBuffer(buffer, 0);
+    } catch {
+      finish(() => reject(new Error("Document unreadable. PDF text could not be extracted.")));
+    }
+  });
 }
 
 export async function extractTextFromFile(file: File): Promise<ExtractedTextResult> {
