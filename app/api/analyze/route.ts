@@ -51,7 +51,17 @@ function toMatchProfile(
 }
 
 function errorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Unknown analysis error.";
+  const message = error instanceof Error ? error.message : "";
+
+  if (message.includes("20 MB limit")) {
+    return "File is larger than the 20 MB limit.";
+  }
+
+  if (message.includes("Unsupported file type")) {
+    return "Unsupported file type. Upload PDF, DOCX, or TXT files.";
+  }
+
+  return "Extraction Failed: Document unreadable or unsupported.";
 }
 
 export async function POST(request: Request) {

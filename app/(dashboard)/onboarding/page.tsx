@@ -19,7 +19,7 @@ export default async function OnboardingPage() {
           <h1 className="page-title">Build your applicant profile</h1>
           <p className="page-description">
             This profile becomes the comparison baseline for extracted grant
-            requirements in later phases.
+            requirements when you analyze documents.
           </p>
         </div>
       </section>

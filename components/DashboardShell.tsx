@@ -1,38 +1,20 @@
 import Link from "next/link";
 
 import { logout } from "@/app/actions/auth";
+import { DashboardNav } from "@/components/DashboardNav";
 
 type DashboardShellProps = {
   children: React.ReactNode;
   email: string;
 };
 
-const navItems = [
-  {
-    href: "/dashboard",
-    label: "Home",
-  },
-  {
-    href: "/upload",
-    label: "Upload Grants",
-  },
-  {
-    href: "/matrix",
-    label: "Matrix Dashboard",
-  },
-  {
-    href: "/profile",
-    label: "Manage Profile",
-  },
-];
-
 export function DashboardShell({ children, email }: DashboardShellProps) {
   return (
-    <div className="min-h-screen bg-stone-50 text-slate-950">
-      <header className="border-b border-stone-200 bg-stone-50/95">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
-          <Link className="flex items-center gap-3" href="/dashboard">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-950 text-sm font-semibold text-stone-50">
+    <div className="min-h-screen bg-app text-slate-950">
+      <header className="app-header">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-3 sm:px-6">
+          <Link className="brand-lockup" href="/dashboard">
+            <span className="brand-mark">
               CG
             </span>
             <span>
@@ -43,20 +25,14 @@ export function DashboardShell({ children, email }: DashboardShellProps) {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
-            {navItems.map((item) => (
-              <Link className="nav-link" href={item.href} key={item.href}>
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <DashboardNav />
 
           <div className="flex items-center gap-3">
-            <span className="hidden max-w-48 truncate text-xs text-slate-500 lg:block">
+            <span className="hidden max-w-48 truncate text-xs font-medium text-slate-500 lg:block">
               {email}
             </span>
             <form action={logout}>
-              <button className="secondary-button" type="submit">
+              <button className="secondary-button header-action" type="submit">
                 Logout
               </button>
             </form>
@@ -64,20 +40,11 @@ export function DashboardShell({ children, email }: DashboardShellProps) {
         </div>
       </header>
 
-      <div className="border-b border-stone-200 bg-white md:hidden">
-        <nav
-          className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 py-2"
-          aria-label="Primary navigation"
-        >
-          {navItems.map((item) => (
-            <Link className="nav-link shrink-0" href={item.href} key={item.href}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+      <div className="mobile-nav-shell md:hidden">
+        <DashboardNav mobile />
       </div>
 
-      <main className="mx-auto w-full max-w-7xl px-6 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:py-10">{children}</main>
     </div>
   );
 }

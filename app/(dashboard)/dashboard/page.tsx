@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { getProfileForUser, requireUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export default async function DashboardPage() {
   const user = await requireUser();
@@ -11,55 +12,169 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
+  const grants = await prisma.grant.findMany({
+    where: {
+      userId: user.id,
+    },
+    include: {
+      matchResult: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const analyzedCount = grants.filter(
+    (grant) => grant.processingStatus === "analyzed",
+  ).length;
+  const failedCount = grants.filter(
+    (grant) => grant.processingStatus === "failed",
+  ).length;
+  const needsReviewCount = grants.filter(
+    (grant) => grant.matchResult?.matchLabel === "Needs Review",
+  ).length;
+  const recentGrants = grants.slice(0, 4);
+  const location =
+    [profile.city, profile.state].filter(Boolean).join(", ") ||
+    profile.country ||
+    "Not set";
+
   return (
     <div className="space-y-8">
       <section className="page-header">
         <div>
           <p className="eyebrow">Workspace home</p>
-          <h1 className="page-title">Grant triage workspace</h1>
+          <h1 className="page-title">Ready to triage grants</h1>
           <p className="page-description">
-            Your applicant profile is ready. The next build phase connects real
-            document upload, extraction, and matching.
+            Upload grant documents, review extracted requirements, and use the
+            matrix to decide which opportunities deserve a closer read.
           </p>
         </div>
-        <Link className="primary-button" href="/profile">
-          Manage profile
-        </Link>
+        <div className="button-row">
+          <Link className="secondary-button" href="/profile">
+            Manage profile
+          </Link>
+          <Link className="primary-button" href="/upload">
+            Upload grants
+          </Link>
+        </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="metric-panel">
           <p className="metric-label">Applicant type</p>
           <p className="metric-value">{profile.applicantType}</p>
+          <p className="metric-note">{location}</p>
         </div>
         <div className="metric-panel">
-          <p className="metric-label">Location</p>
-          <p className="metric-value">
-            {[profile.city, profile.state].filter(Boolean).join(", ")}
-          </p>
+          <p className="metric-label">Documents analyzed</p>
+          <p className="metric-value">{analyzedCount}</p>
+          <p className="metric-note">{grants.length} total uploaded</p>
         </div>
         <div className="metric-panel">
-          <p className="metric-label">Focus areas</p>
-          <p className="metric-value">{profile.focusAreas.length}</p>
+          <p className="metric-label">Needs review</p>
+          <p className="metric-value">{needsReviewCount}</p>
+          <p className="metric-note">Ambiguous items to inspect</p>
+        </div>
+        <div className="metric-panel">
+          <p className="metric-label">Extraction issues</p>
+          <p className="metric-value">{failedCount}</p>
+          <p className="metric-note">Unreadable or unsupported files</p>
         </div>
       </section>
 
-      <section className="rounded-lg border border-stone-200 bg-white">
-        <div className="border-b border-stone-200 px-5 py-4">
-          <h2 className="section-heading">Phase 1 and 2 status</h2>
+      <section className="content-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Workflow</p>
+            <h2 className="section-heading">Triage path</h2>
+          </div>
         </div>
-        <div className="divide-y divide-stone-200">
+        <div className="grid gap-3 p-4 lg:grid-cols-3">
           {[
-            ["Authentication", "Supabase email/password auth is connected."],
-            ["Profile", "Structured onboarding data is saved with Prisma."],
-            ["Navigation", "Protected app shell and core routes are in place."],
-          ].map(([label, description]) => (
-            <div className="grid gap-2 px-5 py-4 md:grid-cols-[12rem_1fr]" key={label}>
-              <p className="text-sm font-medium text-slate-950">{label}</p>
-              <p className="text-sm leading-6 text-slate-600">{description}</p>
-            </div>
+            [
+              "Upload",
+              "Add PDF, DOCX, or TXT grant documents in small batches.",
+              "/upload",
+              "Start analysis",
+            ],
+            [
+              "Compare",
+              "Scan match labels, deadlines, awards, and extracted requirements.",
+              "/matrix",
+              "Open matrix",
+            ],
+            [
+              "Refine",
+              "Keep profile details current so comparisons stay useful.",
+              "/profile",
+              "Edit profile",
+            ],
+          ].map(([label, description, href, action]) => (
+            <Link className="workflow-card" href={href} key={label}>
+              <span className="workflow-index">{label.slice(0, 1)}</span>
+              <span>
+                <span className="block text-sm font-semibold text-slate-950">
+                  {label}
+                </span>
+                <span className="mt-1 block text-sm leading-6 text-slate-600">
+                  {description}
+                </span>
+                <span className="mt-4 inline-flex text-sm font-semibold text-teal-800">
+                  {action}
+                </span>
+              </span>
+            </Link>
           ))}
         </div>
+      </section>
+
+      <section className="content-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Recent activity</p>
+            <h2 className="section-heading">Latest documents</h2>
+          </div>
+          <Link className="secondary-button !min-h-9 !px-3" href="/matrix">
+            View matrix
+          </Link>
+        </div>
+        {recentGrants.length > 0 ? (
+          <div className="divide-y divide-stone-200">
+            {recentGrants.map((grant) => (
+              <div className="activity-row" key={grant.id}>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-slate-950">
+                    {grant.title ?? grant.sourceFileName ?? "Untitled grant"}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {grant.processingStatus === "failed"
+                      ? "Extraction Failed"
+                      : grant.matchResult?.matchLabel ??
+                        (grant.processingStatus === "processing"
+                          ? "Processing"
+                          : "Uploaded")}
+                  </p>
+                </div>
+                <Link
+                  className="secondary-button !min-h-9 !px-3"
+                  href={`/grants/${grant.id}`}
+                >
+                  Review
+                </Link>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <p className="text-sm font-semibold text-slate-950">
+              No grant documents yet
+            </p>
+            <p className="mt-1 text-sm leading-6 text-slate-600">
+              Upload the first document to begin building your triage matrix.
+            </p>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -19,8 +19,8 @@ export default async function UploadPage() {
           <h1 className="page-title">Analyze grant documents</h1>
           <p className="page-description">
             Upload PDF, DOCX, or TXT files. Each document is processed
-            separately, extracted into requirement-array JSON, matched against
-            your profile, and saved to the matrix.
+            separately, compared against your applicant profile, and saved to
+            the matrix for review.
           </p>
         </div>
       </section>

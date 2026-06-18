@@ -114,10 +114,10 @@ export function UploadDropzone() {
       />
 
       <button
-        className={`flex min-h-64 w-full flex-col items-center justify-center gap-4 rounded-lg border border-dashed px-6 text-center transition ${
+        className={`upload-dropzone ${
           isDragging
-            ? "border-slate-600 bg-stone-100"
-            : "border-stone-300 bg-white hover:bg-stone-50"
+            ? "upload-dropzone-active"
+            : "upload-dropzone-idle"
         }`}
         type="button"
         onClick={() => inputRef.current?.click()}
@@ -139,7 +139,7 @@ export function UploadDropzone() {
           addFiles(event.dataTransfer.files);
         }}
       >
-        <span className="flex h-12 w-12 items-center justify-center rounded-md border border-stone-200 bg-stone-50 text-slate-700">
+        <span className="upload-icon">
           <Upload aria-hidden size={22} />
         </span>
         <span>
@@ -153,14 +153,14 @@ export function UploadDropzone() {
       </button>
 
       {message ? (
-        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+        <p className="notice notice-warning">
           {message}
         </p>
       ) : null}
 
       {files.length > 0 ? (
-        <section className="rounded-lg border border-stone-200 bg-white">
-          <div className="border-b border-stone-200 px-4 py-3">
+        <section className="content-panel">
+          <div className="panel-header">
             <h2 className="section-heading">File queue</h2>
           </div>
           <div className="divide-y divide-stone-200">
@@ -211,21 +211,33 @@ export function UploadDropzone() {
       </div>
 
       {results.length > 0 ? (
-        <section className="rounded-lg border border-stone-200 bg-white">
-          <div className="border-b border-stone-200 px-4 py-3">
+        <section className="content-panel">
+          <div className="panel-header">
             <h2 className="section-heading">Analysis results</h2>
           </div>
           <div className="divide-y divide-stone-200">
             {results.map((result) => (
-              <div className="px-4 py-3" key={result.grantId}>
-                <p className="text-sm font-medium text-slate-950">
-                  {result.title ?? result.fileName}
-                </p>
-                <p className="mt-1 text-sm text-slate-600">
-                  {result.status === "analyzed"
-                    ? `Saved with ${result.matchLabel}.`
-                    : result.error}
-                </p>
+              <div className="activity-row" key={result.grantId}>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-slate-950">
+                    {result.title ?? result.fileName}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    {result.status === "analyzed"
+                      ? `Saved with ${result.matchLabel}.`
+                      : result.error ??
+                        "Extraction Failed: Document unreadable or unsupported."}
+                  </p>
+                </div>
+                <span
+                  className={`status-badge ${
+                    result.status === "analyzed"
+                      ? "status-high"
+                      : "status-failed"
+                  }`}
+                >
+                  {result.status === "analyzed" ? "Saved" : "Failed"}
+                </span>
               </div>
             ))}
           </div>

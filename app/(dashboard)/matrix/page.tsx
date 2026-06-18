@@ -47,17 +47,21 @@ function formatDate(date: Date | null) {
 function matchLabelClass(label: string | null | undefined) {
   switch (label) {
     case "High Match":
-      return "border-emerald-200 bg-emerald-50 text-emerald-800";
+      return "status-high";
     case "Medium Match":
-      return "border-blue-200 bg-blue-50 text-blue-800";
+      return "status-medium";
     case "Low Match":
-      return "border-rose-200 bg-rose-50 text-rose-800";
+      return "status-low";
     case "Needs Review":
-      return "border-amber-200 bg-amber-50 text-amber-800";
+      return "status-review";
+    case "Extraction Failed":
+      return "status-failed";
     default:
-      return "border-stone-200 bg-stone-50 text-slate-600";
+      return "status-neutral";
   }
 }
+
+const extractionFailedText = "Extraction Failed: Document unreadable or unsupported.";
 
 export default async function MatrixPage() {
   const user = await requireUser();
@@ -80,6 +84,16 @@ export default async function MatrixPage() {
     },
   });
 
+  const highCount = grants.filter(
+    (grant) => grant.matchResult?.matchLabel === "High Match",
+  ).length;
+  const reviewCount = grants.filter(
+    (grant) => grant.matchResult?.matchLabel === "Needs Review",
+  ).length;
+  const failedCount = grants.filter(
+    (grant) => grant.processingStatus === "failed",
+  ).length;
+
   return (
     <div className="space-y-8">
       <section className="page-header">
@@ -97,10 +111,50 @@ export default async function MatrixPage() {
         </Link>
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-stone-200 bg-white">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-stone-200 bg-stone-100 text-xs uppercase text-slate-500">
+      <section className="grid gap-4 md:grid-cols-3">
+        <div className="metric-panel compact">
+          <p className="metric-label">High match</p>
+          <p className="metric-value">{highCount}</p>
+          <p className="metric-note">Strong first-pass fit</p>
+        </div>
+        <div className="metric-panel compact">
+          <p className="metric-label">Needs review</p>
+          <p className="metric-value">{reviewCount}</p>
+          <p className="metric-note">Ambiguous or incomplete evidence</p>
+        </div>
+        <div className="metric-panel compact">
+          <p className="metric-label">Extraction failed</p>
+          <p className="metric-value">{failedCount}</p>
+          <p className="metric-note">Unreadable files to replace</p>
+        </div>
+      </section>
+
+      <section className="matrix-card">
+        <div className="matrix-toolbar">
+          <div>
+            <p className="eyebrow">Portfolio</p>
+            <h2 className="section-heading">Analyzed grants</h2>
+          </div>
+          <p className="text-sm text-slate-500">{grants.length} documents</p>
+        </div>
+        <div className="matrix-scroll">
+          <table className="matrix-table">
+            <colgroup>
+              <col className="w-[260px]" />
+              <col className="w-[150px]" />
+              <col className="w-[360px]" />
+              <col className="w-[190px]" />
+              <col className="w-[140px]" />
+              <col className="w-[160px]" />
+              <col className="w-[250px]" />
+              <col className="w-[240px]" />
+              <col className="w-[240px]" />
+              <col className="w-[130px]" />
+              <col className="w-[130px]" />
+              <col className="w-[160px]" />
+              <col className="w-[120px]" />
+            </colgroup>
+            <thead>
               <tr>
                 {[
                   "Grant Name",
@@ -117,7 +171,7 @@ export default async function MatrixPage() {
                   "Extraction Confidence",
                   "Actions",
                 ].map((heading) => (
-                  <th className="whitespace-nowrap px-4 py-3 font-medium" key={heading}>
+                  <th key={heading}>
                     {heading}
                   </th>
                 ))}
@@ -126,8 +180,8 @@ export default async function MatrixPage() {
             <tbody>
               {grants.length === 0 ? (
                 <tr>
-                  <td className="px-4 py-8 text-slate-500" colSpan={13}>
-                    Upload and analyze grants to populate the matrix.
+                  <td className="matrix-empty" colSpan={13}>
+                    Upload grant documents to populate the matrix.
                   </td>
                 </tr>
               ) : null}
@@ -141,67 +195,82 @@ export default async function MatrixPage() {
                     (requirement) =>
                       requirement.category !== "other_eligibility_note",
                   ).length ?? 0;
+                const statusLabel =
+                  grant.processingStatus === "failed"
+                    ? "Extraction Failed"
+                    : grant.matchResult?.matchLabel ??
+                      (grant.processingStatus === "processing"
+                        ? "Processing"
+                        : "Uploaded");
+                const primaryReason =
+                  grant.processingStatus === "failed"
+                    ? extractionFailedText
+                    : grant.matchResult?.primaryReason ??
+                      "Analysis is not complete.";
 
                 return (
-                  <tr
-                    className="border-b border-stone-200 last:border-b-0 hover:bg-stone-50"
-                    key={grant.id}
-                  >
-                    <td className="min-w-64 px-4 py-4 align-top">
+                  <tr key={grant.id}>
+                    <td className="matrix-name-cell">
                       <Link
-                        className="font-medium text-slate-950 underline-offset-4 hover:underline"
+                        className="table-link"
                         href={`/grants/${grant.id}`}
                       >
                         {grant.title ?? grant.sourceFileName ?? "Untitled grant"}
                       </Link>
+                      <p className="mt-1 truncate text-xs text-slate-500">
+                        {grant.sourceFileName ?? "Uploaded document"}
+                      </p>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 align-top">
+                    <td>
                       <span
-                        className={`inline-flex rounded-md border px-2 py-1 text-xs font-semibold ${matchLabelClass(
-                          grant.matchResult?.matchLabel,
+                        className={`status-badge ${matchLabelClass(
+                          statusLabel,
                         )}`}
                       >
-                        {grant.matchResult?.matchLabel ?? grant.processingStatus}
+                        {statusLabel}
                       </span>
                     </td>
-                    <td className="min-w-80 px-4 py-4 align-top text-slate-600">
-                      {grant.matchResult?.primaryReason ??
-                        grant.extractionResult?.errorMessage ??
-                        "Analysis is not complete."}
+                    <td>
+                      <details className="expandable-text">
+                        <summary>
+                          <span>{primaryReason}</span>
+                        </summary>
+                        <p>{primaryReason}</p>
+                      </details>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 align-top text-slate-600">
+                    <td>
                       {grant.funder ?? "Not stated"}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 align-top text-slate-600">
+                    <td>
                       {formatDate(grant.deadline)}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 align-top text-slate-600">
+                    <td>
                       {extractedGrant?.metadata.awardText || "Not stated"}
                     </td>
-                    <td className="min-w-56 px-4 py-4 align-top text-slate-600">
+                    <td>
                       {firstRequirement(extractedGrant, ["applicant_type"])}
                     </td>
-                    <td className="min-w-56 px-4 py-4 align-top text-slate-600">
+                    <td>
                       {firstRequirement(extractedGrant, ["location"])}
                     </td>
-                    <td className="min-w-56 px-4 py-4 align-top text-slate-600">
+                    <td>
                       {firstRequirement(extractedGrant, [
                         "legal_status",
                         "tax_status",
                       ])}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 align-top text-slate-600">
+                    <td className="numeric-cell">
                       {hardRequirementCount}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 align-top text-slate-600">
+                    <td className="numeric-cell">
                       {countNeedsReview(grant.matchResult?.needsReviewItems)}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 align-top text-slate-600">
+                    <td>
                       {extractedGrant?.extractionConfidence ?? "Not available"}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 align-top">
+                    <td>
                       <Link className="secondary-button !min-h-9 !px-3" href={`/grants/${grant.id}`}>
-                        View JSON
+                        Review
                       </Link>
                     </td>
                   </tr>

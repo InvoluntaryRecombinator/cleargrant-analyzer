@@ -43,6 +43,8 @@ function jsonString(value: unknown) {
   return JSON.stringify(value, null, 2);
 }
 
+const extractionFailedText = "Extraction Failed: Document unreadable or unsupported.";
+
 export default async function GrantDetailPage({
   params,
 }: {
@@ -74,6 +76,11 @@ export default async function GrantDetailPage({
 
   const extractedGrant = asExtractedGrant(grant.extractionResult?.extractedJson);
   const groups = groupedRequirements(extractedGrant);
+  const extractionFailed = grant.processingStatus === "failed";
+  const statusLabel = extractionFailed
+    ? "Extraction Failed"
+    : grant.matchResult?.matchLabel ??
+      (grant.processingStatus === "processing" ? "Processing" : "Uploaded");
 
   return (
     <div className="space-y-8">
@@ -96,9 +103,7 @@ export default async function GrantDetailPage({
       <section className="grid gap-4 md:grid-cols-3">
         <div className="metric-panel">
           <p className="metric-label">Match label</p>
-          <p className="metric-value">
-            {grant.matchResult?.matchLabel ?? grant.processingStatus}
-          </p>
+          <p className="metric-value">{statusLabel}</p>
         </div>
         <div className="metric-panel">
           <p className="metric-label">Funder</p>
@@ -114,18 +119,34 @@ export default async function GrantDetailPage({
         </div>
       </section>
 
-      <section className="rounded-lg border border-stone-200 bg-white">
-        <div className="border-b border-stone-200 px-5 py-4">
+      {extractionFailed ? (
+        <section className="alert-panel alert-error">
+          <p className="text-sm font-semibold text-rose-950">
+            Document could not be analyzed
+          </p>
+          <p className="mt-1 text-sm leading-6 text-rose-900">
+            {extractionFailedText} Upload a clearer file or a text-based copy
+            and try again.
+          </p>
+        </section>
+      ) : null}
+
+      <section className="content-panel">
+        <div className="panel-header">
           <h2 className="section-heading">Match Result</h2>
         </div>
         <div className="space-y-3 px-5 py-4 text-sm leading-6 text-slate-600">
-          <p>{grant.matchResult?.primaryReason ?? "No match result saved."}</p>
+          <p>
+            {extractionFailed
+              ? extractionFailedText
+              : grant.matchResult?.primaryReason ?? "No match result saved."}
+          </p>
         </div>
       </section>
 
       {groups.map(([category, requirements]) => (
-        <section className="rounded-lg border border-stone-200 bg-white" key={category}>
-          <div className="border-b border-stone-200 px-5 py-4">
+        <section className="content-panel" key={category}>
+          <div className="panel-header">
             <h2 className="section-heading">{categoryTitles[category]}</h2>
           </div>
           <div className="divide-y divide-stone-200">
@@ -153,14 +174,16 @@ export default async function GrantDetailPage({
         </section>
       ))}
 
-      <section className="rounded-lg border border-stone-200 bg-white">
-        <div className="border-b border-stone-200 px-5 py-4">
-          <h2 className="section-heading">Raw JSON</h2>
-        </div>
-        <pre className="overflow-x-auto px-5 py-4 text-xs leading-5 text-slate-700">
-          {jsonString(grant.extractionResult?.extractedJson ?? {})}
-        </pre>
-      </section>
+      {!extractionFailed ? (
+        <section className="content-panel">
+          <div className="panel-header">
+            <h2 className="section-heading">Raw JSON</h2>
+          </div>
+          <pre className="overflow-x-auto px-5 py-4 text-xs leading-5 text-slate-700">
+            {jsonString(grant.extractionResult?.extractedJson ?? {})}
+          </pre>
+        </section>
+      ) : null}
     </div>
   );
 }

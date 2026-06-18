@@ -142,7 +142,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
   );
 
   return (
-    <form action={formAction} className="space-y-8">
+    <form action={formAction} className="profile-form">
       <input name="redirectTo" type="hidden" value={redirectTo} />
 
       <section className="form-section">
@@ -381,15 +381,15 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
         <p
           className={
             state.ok
-              ? "rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900"
-              : "rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+              ? "notice border-emerald-200 bg-emerald-50 text-emerald-900"
+              : "notice notice-warning"
           }
         >
           {state.message}
         </p>
       ) : null}
 
-      <div className="flex items-center justify-end border-t border-stone-200 pt-6">
+      <div className="form-footer">
         <button className="primary-button" disabled={pending} type="submit">
           {pending ? "Saving..." : "Save profile"}
         </button>
