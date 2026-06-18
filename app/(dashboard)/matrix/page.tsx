@@ -3,6 +3,10 @@ import { redirect } from "next/navigation";
 
 import { getProfileForUser, requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import {
+  matchStatusClassName,
+  readableGrantStatus,
+} from "@/utils/presentation";
 import type {
   ExtractedGrant,
   ExtractedRequirementCategory,
@@ -42,23 +46,6 @@ function formatDate(date: Date | null) {
     day: "numeric",
     year: "numeric",
   }).format(date);
-}
-
-function matchLabelClass(label: string | null | undefined) {
-  switch (label) {
-    case "High Match":
-      return "status-high";
-    case "Medium Match":
-      return "status-medium";
-    case "Low Match":
-      return "status-low";
-    case "Needs Review":
-      return "status-review";
-    case "Extraction Failed":
-      return "status-failed";
-    default:
-      return "status-neutral";
-  }
 }
 
 const extractionFailedText = "Extraction Failed: Document unreadable or unsupported.";
@@ -129,30 +116,32 @@ export default async function MatrixPage() {
         </div>
       </section>
 
-      <section className="matrix-card">
-        <div className="matrix-toolbar">
+      <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between gap-4 border-b border-stone-200 bg-white px-4 py-3">
           <div>
             <p className="eyebrow">Portfolio</p>
             <h2 className="section-heading">Analyzed grants</h2>
           </div>
           <p className="text-sm text-slate-500">{grants.length} documents</p>
         </div>
-        <div className="matrix-scroll">
-          <table className="matrix-table">
+        <div className="max-h-[72vh] overflow-auto">
+          <table
+            className="w-full border-separate border-spacing-0 text-left text-sm"
+            style={{ minWidth: "2020px", tableLayout: "fixed" }}
+          >
             <colgroup>
-              <col className="w-[260px]" />
-              <col className="w-[150px]" />
-              <col className="w-[360px]" />
-              <col className="w-[190px]" />
-              <col className="w-[140px]" />
-              <col className="w-[160px]" />
-              <col className="w-[250px]" />
-              <col className="w-[240px]" />
-              <col className="w-[240px]" />
-              <col className="w-[130px]" />
-              <col className="w-[130px]" />
-              <col className="w-[160px]" />
-              <col className="w-[120px]" />
+              <col style={{ width: "250px" }} />
+              <col style={{ width: "150px" }} />
+              <col style={{ width: "350px" }} />
+              <col style={{ width: "190px" }} />
+              <col style={{ width: "130px" }} />
+              <col style={{ width: "180px" }} />
+              <col style={{ width: "220px" }} />
+              <col style={{ width: "260px" }} />
+              <col style={{ width: "110px" }} />
+              <col style={{ width: "120px" }} />
+              <col style={{ width: "150px" }} />
+              <col style={{ width: "110px" }} />
             </colgroup>
             <thead>
               <tr>
@@ -164,14 +153,16 @@ export default async function MatrixPage() {
                   "Deadline",
                   "Award Amount",
                   "Applicant Requirement",
-                  "Location Requirement",
-                  "Legal/Tax Requirement",
+                  "Location / Legal",
                   "Hard Requirements",
                   "Needs Review",
                   "Extraction Confidence",
                   "Actions",
                 ].map((heading) => (
-                  <th key={heading}>
+                  <th
+                    className="sticky top-0 z-10 border-b border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold uppercase leading-4 tracking-normal text-slate-500"
+                    key={heading}
+                  >
                     {heading}
                   </th>
                 ))}
@@ -180,7 +171,7 @@ export default async function MatrixPage() {
             <tbody>
               {grants.length === 0 ? (
                 <tr>
-                  <td className="matrix-empty" colSpan={13}>
+                  <td className="px-4 py-8 text-slate-500" colSpan={12}>
                     Upload grant documents to populate the matrix.
                   </td>
                 </tr>
@@ -190,18 +181,22 @@ export default async function MatrixPage() {
                 const extractedGrant = asExtractedGrant(
                   grant.extractionResult?.extractedJson,
                 );
+                const locationRequirement = firstRequirement(extractedGrant, [
+                  "location",
+                ]);
+                const legalTaxRequirement = firstRequirement(extractedGrant, [
+                  "legal_status",
+                  "tax_status",
+                ]);
                 const hardRequirementCount =
                   extractedGrant?.requirements.filter(
                     (requirement) =>
                       requirement.category !== "other_eligibility_note",
                   ).length ?? 0;
-                const statusLabel =
-                  grant.processingStatus === "failed"
-                    ? "Extraction Failed"
-                    : grant.matchResult?.matchLabel ??
-                      (grant.processingStatus === "processing"
-                        ? "Processing"
-                        : "Uploaded");
+                const statusLabel = readableGrantStatus(
+                  grant.processingStatus,
+                  grant.matchResult?.matchLabel,
+                );
                 const primaryReason =
                   grant.processingStatus === "failed"
                     ? extractionFailedText
@@ -209,10 +204,13 @@ export default async function MatrixPage() {
                       "Analysis is not complete.";
 
                 return (
-                  <tr key={grant.id}>
-                    <td className="matrix-name-cell">
+                  <tr
+                    className="odd:bg-white even:bg-slate-50/50 hover:bg-teal-50/40"
+                    key={grant.id}
+                  >
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top">
                       <Link
-                        className="table-link"
+                        className="block truncate font-semibold text-slate-950 underline-offset-4 hover:text-teal-800 hover:underline"
                         href={`/grants/${grant.id}`}
                       >
                         {grant.title ?? grant.sourceFileName ?? "Untitled grant"}
@@ -221,55 +219,71 @@ export default async function MatrixPage() {
                         {grant.sourceFileName ?? "Uploaded document"}
                       </p>
                     </td>
-                    <td>
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top">
                       <span
-                        className={`status-badge ${matchLabelClass(
+                        className={`inline-flex min-h-7 items-center justify-center rounded-full border px-2.5 py-1 text-xs font-bold leading-4 ${matchStatusClassName(
                           statusLabel,
                         )}`}
                       >
                         {statusLabel}
                       </span>
                     </td>
-                    <td>
-                      <details className="expandable-text">
-                        <summary>
-                          <span>{primaryReason}</span>
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top">
+                      <details className="group">
+                        <summary className="cursor-pointer list-none">
+                          <span className="block max-h-[4.25rem] overflow-hidden text-sm leading-5 text-slate-700">
+                            {primaryReason}
+                          </span>
+                          <span className="mt-1 block text-xs font-bold text-teal-700 group-open:hidden">
+                            Expand
+                          </span>
                         </summary>
-                        <p>{primaryReason}</p>
+                        <p className="mt-2 border-l-2 border-teal-200 pl-3 text-sm leading-5 text-slate-700">
+                          {primaryReason}
+                        </p>
                       </details>
                     </td>
-                    <td>
-                      {grant.funder ?? "Not stated"}
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top text-slate-700">
+                      <div className="max-h-16 overflow-hidden leading-5">
+                        {grant.funder ?? "Not stated"}
+                      </div>
                     </td>
-                    <td>
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-xs leading-5 text-slate-700">
                       {formatDate(grant.deadline)}
                     </td>
-                    <td>
-                      {extractedGrant?.metadata.awardText || "Not stated"}
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-xs leading-5 text-slate-700">
+                      <div className="max-h-16 overflow-hidden">
+                        {extractedGrant?.metadata.awardText || "Not stated"}
+                      </div>
                     </td>
-                    <td>
-                      {firstRequirement(extractedGrant, ["applicant_type"])}
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top text-slate-700">
+                      <div className="max-h-16 overflow-hidden leading-5">
+                        {firstRequirement(extractedGrant, ["applicant_type"])}
+                      </div>
                     </td>
-                    <td>
-                      {firstRequirement(extractedGrant, ["location"])}
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top text-slate-700">
+                      <div className="max-h-20 overflow-hidden leading-5">
+                        <span className="font-semibold text-slate-900">Location:</span>{" "}
+                        {locationRequirement}
+                        <br />
+                        <span className="font-semibold text-slate-900">Legal:</span>{" "}
+                        {legalTaxRequirement}
+                      </div>
                     </td>
-                    <td>
-                      {firstRequirement(extractedGrant, [
-                        "legal_status",
-                        "tax_status",
-                      ])}
-                    </td>
-                    <td className="numeric-cell">
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-sm font-semibold text-slate-950">
                       {hardRequirementCount}
                     </td>
-                    <td className="numeric-cell">
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-sm font-semibold text-slate-950">
                       {countNeedsReview(grant.matchResult?.needsReviewItems)}
                     </td>
-                    <td>
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top text-xs font-semibold uppercase leading-5 text-slate-600">
                       {extractedGrant?.extractionConfidence ?? "Not available"}
                     </td>
-                    <td>
-                      <Link className="secondary-button !min-h-9 !px-3" href={`/grants/${grant.id}`}>
+                    <td className="border-b border-slate-200/60 px-3 py-3 align-top">
+                      <Link
+                        className="inline-flex min-h-8 items-center justify-center rounded-md border border-stone-300 bg-white px-3 text-xs font-semibold text-slate-950 transition hover:bg-stone-50"
+                        href={`/grants/${grant.id}`}
+                      >
                         Review
                       </Link>
                     </td>
