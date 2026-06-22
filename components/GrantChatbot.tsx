@@ -5,6 +5,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { Loader2, Send, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import TextareaAutosize from "react-textarea-autosize";
 
 export type GrantChatbotGrant = {
   title: string;
@@ -71,7 +72,7 @@ export function GrantChatbot({ grant, onClose }: GrantChatbotProps) {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] flex h-[600px] w-[450px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
+    <div className="fixed bottom-6 right-6 w-[620px] h-[800px] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col z-[100] overflow-hidden">
       <div className="flex items-center justify-between gap-3 border-b border-stone-200 bg-slate-100 px-4 py-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-slate-950">
@@ -92,8 +93,9 @@ export function GrantChatbot({ grant, onClose }: GrantChatbotProps) {
       <div className="flex-1 space-y-6 overflow-y-auto p-5">
         {messages.length === 0 ? (
           <div className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm leading-6 text-slate-600">
-            Ask about eligibility requirements, source quotes, deadlines, or
-            the current match label.
+            How can I help? We can discuss anything about this grant
+            opportunity, including eligibility, deadlines, requirements, or
+            fit.
           </div>
         ) : null}
 
@@ -148,10 +150,12 @@ export function GrantChatbot({ grant, onClose }: GrantChatbotProps) {
         className="flex w-full shrink-0 gap-2 border-t border-slate-200 bg-slate-50 p-4"
         onSubmit={submitMessage}
       >
-        <input
-          className="w-full flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+        <TextareaAutosize
+          className="flex-1 w-full resize-none rounded-md border border-slate-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-sm"
+          maxRows={6}
+          minRows={2}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask about this opportunity"
+          placeholder="Ask about this opportunity..."
           value={input}
         />
         <button
