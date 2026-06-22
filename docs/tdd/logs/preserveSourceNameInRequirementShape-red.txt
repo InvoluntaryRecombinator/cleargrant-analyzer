@@ -1,0 +1,93 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/preserveSourceNameInRequirementShape.test.ts (3 tests | 3 failed) 5ms
+     × returns the extraction unchanged when every requirement has sourceName 4ms
+     × rejects requirements with missing sourceName 1ms
+     × rejects requirements with a blank sourceName 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/preserveSourceNameInRequirementShape.test.ts > preserveSourceNameInRequirementShape > returns the extraction unchanged when every requirement has sourceName
+AssertionError: expected { Object (metadata, requirements, ...) } to deeply equal { …(4) }
+
+- Expected
++ Received
+
+  {
+-   "extractionConfidence": "high",
+-   "extractionNotes": [],
+-   "metadata": {
+-     "grantTitle": "CA Dream Fund",
+-   },
+-   "requirements": [
+-     {
+-       "category": "location",
+-       "confidence": "high",
+-       "normalizedValues": [
+-         "california",
+-       ],
+-       "sourceName": "guidelines.pdf",
+-       "sourceQuote": "Applicants must operate in California.",
+-       "value": "Applicants must operate in California.",
+-     },
+-   ],
++   "extractionConfidence": "low",
++   "metadata": {},
++   "requirements": [],
+  }
+
+ ❯ utils/preserveSourceNameInRequirementShape.test.ts:28:62
+     26|     };
+     27|
+     28|     expect(preserveSourceNameInRequirementShape(extraction)).toEqual(e…
+       |                                                              ^
+     29|   });
+     30|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  utils/preserveSourceNameInRequirementShape.test.ts > preserveSourceNameInRequirementShape > rejects requirements with missing sourceName
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ utils/preserveSourceNameInRequirementShape.test.ts:46:7
+     44|         extractionConfidence: "high",
+     45|       }),
+     46|     ).toThrow("Every extracted requirement must include a non-empty so…
+       |       ^
+     47|   });
+     48|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  utils/preserveSourceNameInRequirementShape.test.ts > preserveSourceNameInRequirementShape > rejects requirements with a blank sourceName
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ utils/preserveSourceNameInRequirementShape.test.ts:65:7
+     63|         extractionConfidence: "high",
+     64|       }),
+     65|     ).toThrow("Every extracted requirement must include a non-empty so…
+       |       ^
+     66|   });
+     67| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  01:24:07
+   Duration  116ms (transform 10ms, setup 0ms, import 15ms, tests 5ms, environment 0ms)
+
