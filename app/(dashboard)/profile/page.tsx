@@ -29,23 +29,21 @@ export default async function ProfilePage() {
   const formProfile = profile ? toProfileFormValues(profile) : null;
 
   return (
-    <div className="space-y-8">
-      <section className="page-header">
+    <div className="space-y-5">
+      <section className="rounded-lg border border-gray-200 bg-white px-5 py-4 shadow-sm">
         <div>
-          <p className="eyebrow">Manage Profile</p>
-          <h1 className="page-title">
-            {profile ? "Edit applicant profile" : "Complete applicant profile"}
+          <p className="eyebrow">Applicant profile</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-normal text-slate-950">
+            {profile ? "Update applicant profile" : "Complete applicant profile"}
           </h1>
-          <p className="page-description">
-            Keep applicant attributes current so deterministic matching can
-            compare requirements against reliable profile data.
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            ClearGrant uses this profile to check each grant opportunity
+            against the applicant.
           </p>
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
-        <ProfileForm mode={profile ? "edit" : "onboarding"} profile={formProfile} />
-      </section>
+      <ProfileForm mode={profile ? "edit" : "onboarding"} profile={formProfile} />
     </div>
   );
 }

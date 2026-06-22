@@ -7,7 +7,7 @@ export default async function Home() {
   const user = await getCurrentSupabaseUser();
 
   if (user) {
-    redirect("/dashboard");
+    redirect("/matrix");
   }
 
   return (
@@ -17,18 +17,18 @@ export default async function Home() {
           <div className="space-y-5">
             <p className="eyebrow">ClearGrant Analyzer</p>
             <h1 className="max-w-3xl text-5xl font-semibold leading-tight tracking-normal text-slate-950">
-              Eligibility triage for grant documents.
+              Check grant fit before you apply.
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-slate-600">
-              Upload grant requirements, extract explicit eligibility rules, and
-              compare them against a saved applicant profile before investing
-              time in a full application.
+              Add grant guidelines, notices, PDFs, DOCX files, or pasted source
+              text. ClearGrant extracts eligibility requirements and compares
+              them against your applicant profile.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
             <Link className="primary-button" href="/signup">
-              Create workspace
+              Create account
             </Link>
             <Link className="secondary-button" href="/login">
               Log in
@@ -47,9 +47,9 @@ export default async function Home() {
           </div>
           <div className="divide-y divide-stone-200">
             {[
-              ["Profile", "Save applicant type, location, tax status, and capacity."],
-              ["Extraction", "Store explicit requirements with source quotes."],
-              ["Matrix", "Compare grants in a readable desktop-first table."],
+              ["Applicant profile", "Save applicant type, location, tax status, and capacity."],
+              ["Requirement review", "Store explicit requirements with source quotes."],
+              ["Comparison table", "Compare grant opportunities in a readable desktop-first table."],
             ].map(([label, description]) => (
               <div className="grid grid-cols-[7rem_1fr] gap-4 py-4" key={label}>
                 <span className="text-sm font-medium text-slate-950">{label}</span>

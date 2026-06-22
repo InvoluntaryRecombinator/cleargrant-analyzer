@@ -106,7 +106,7 @@ export async function saveProfile(
     },
   });
 
-  revalidatePath("/dashboard");
+  revalidatePath("/matrix");
   revalidatePath("/profile");
   revalidatePath("/onboarding");
 

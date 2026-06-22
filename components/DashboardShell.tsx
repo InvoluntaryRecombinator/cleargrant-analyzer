@@ -10,10 +10,10 @@ type DashboardShellProps = {
 
 export function DashboardShell({ children, email }: DashboardShellProps) {
   return (
-    <div className="min-h-screen bg-[#faf8f3] text-slate-950">
-      <header className="sticky top-0 z-40 border-b border-stone-200 bg-[#faf8f3]/95 backdrop-blur">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
+      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-3 sm:px-6">
-          <Link className="flex min-w-max items-center gap-3" href="/dashboard">
+          <Link className="flex min-w-max items-center gap-3" href="/matrix">
             <span className="flex h-10 w-10 items-center justify-center rounded-md bg-slate-950 text-sm font-black tracking-normal text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
               CG
             </span>

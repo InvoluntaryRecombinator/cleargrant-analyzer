@@ -11,14 +11,14 @@ import {
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
-type FileQueueItem = {
+type FileSourceItem = {
   id: string;
   kind: "file";
   file: File;
   displayName: string;
 };
 
-type TextQueueItem = {
+type TextSourceItem = {
   id: string;
   kind: "text";
   text: string;
@@ -26,7 +26,7 @@ type TextQueueItem = {
   sourceUrl: string;
 };
 
-type QueueItem = FileQueueItem | TextQueueItem;
+type SourceItem = FileSourceItem | TextSourceItem;
 
 const acceptedExtensions = [".pdf", ".docx", ".txt"];
 const maxFiles = 10;
@@ -56,21 +56,21 @@ export function IntakeDesk() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [grantName, setGrantName] = useState("");
-  const [queue, setQueue] = useState<QueueItem[]>([]);
+  const [sourceItems, setSourceItems] = useState<SourceItem[]>([]);
   const [pastedText, setPastedText] = useState("");
   const [pastedSourceUrl, setPastedSourceUrl] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const fileCount = queue.filter((item) => item.kind === "file").length;
-  const textCount = queue.filter((item) => item.kind === "text").length;
-  const canAnalyze = grantName.trim().length > 0 && queue.length > 0 && !isSubmitting;
+  const fileCount = sourceItems.filter((item) => item.kind === "file").length;
+  const textCount = sourceItems.filter((item) => item.kind === "text").length;
+  const canAnalyze = grantName.trim().length > 0 && sourceItems.length > 0 && !isSubmitting;
 
   function addFiles(nextFiles: FileList | File[]) {
     setMessage(null);
 
-    const accepted: FileQueueItem[] = [];
+    const accepted: FileSourceItem[] = [];
     const rejected: string[] = [];
     let nextFileCount = fileCount;
 
@@ -86,7 +86,7 @@ export function IntakeDesk() {
       }
 
       if (nextFileCount >= maxFiles) {
-        rejected.push("Only 10 files can be queued.");
+        rejected.push("Only 10 files can be added.");
         break;
       }
 
@@ -100,7 +100,7 @@ export function IntakeDesk() {
     }
 
     if (accepted.length > 0) {
-      setQueue((current) => [...current, ...accepted]);
+      setSourceItems((current) => [...current, ...accepted]);
     }
 
     if (rejected.length > 0) {
@@ -112,27 +112,27 @@ export function IntakeDesk() {
     const trimmedText = pastedText.trim();
 
     if (!trimmedText) {
-      setMessage("Paste source text before adding it to the queue.");
+      setMessage("Paste source text before adding it.");
       return;
     }
 
     if (trimmedText.length > maxPastedChars) {
-      setMessage("Pasted text snippets must be 40,000 characters or fewer.");
+      setMessage("Source text snippets must be 40,000 characters or fewer.");
       return;
     }
 
     if (textCount >= maxPastedSnippets) {
-      setMessage("Only 10 pasted text snippets can be queued.");
+      setMessage("Only 10 source text snippets can be added.");
       return;
     }
 
-    setQueue((current) => [
+    setSourceItems((current) => [
       ...current,
       {
         id: createId(),
         kind: "text",
         text: trimmedText,
-        displayName: `Pasted Text Snippet ${textCount + 1}`,
+        displayName: `Source Text Snippet ${textCount + 1}`,
         sourceUrl: pastedSourceUrl.trim(),
       },
     ]);
@@ -142,7 +142,7 @@ export function IntakeDesk() {
   }
 
   function updateDisplayName(itemId: string, displayName: string) {
-    setQueue((current) =>
+    setSourceItems((current) =>
       current.map((item) =>
         item.id === itemId
           ? {
@@ -155,7 +155,7 @@ export function IntakeDesk() {
   }
 
   function updateSourceUrl(itemId: string, sourceUrl: string) {
-    setQueue((current) =>
+    setSourceItems((current) =>
       current.map((item) =>
         item.id === itemId && item.kind === "text"
           ? {
@@ -168,7 +168,7 @@ export function IntakeDesk() {
   }
 
   function removeItem(itemId: string) {
-    setQueue((current) => current.filter((item) => item.id !== itemId));
+    setSourceItems((current) => current.filter((item) => item.id !== itemId));
   }
 
   async function analyzeOpportunity() {
@@ -182,7 +182,7 @@ export function IntakeDesk() {
     const formData = new FormData();
     formData.append("grantName", grantName.trim());
 
-    queue.forEach((item, sourceOrder) => {
+    sourceItems.forEach((item, sourceOrder) => {
       if (item.kind === "file") {
         formData.append("files", item.file);
         formData.append("fileDisplayNames", item.displayName.trim() || item.file.name);
@@ -191,7 +191,7 @@ export function IntakeDesk() {
         formData.append("pastedTexts", item.text);
         formData.append(
           "pastedDisplayNames",
-          item.displayName.trim() || "Pasted Text Snippet",
+          item.displayName.trim() || "Source Text Snippet",
         );
         formData.append("pastedSourceUrls", item.sourceUrl.trim());
         formData.append("pastedSourceOrders", String(sourceOrder));
@@ -232,11 +232,11 @@ export function IntakeDesk() {
 
   return (
     <div className="space-y-6">
-      <section className="content-panel">
-        <div className="panel-header">
+      <section className="intake-panel">
+        <div className="intake-panel-header">
           <div>
             <p className="eyebrow">New opportunity</p>
-            <h2 className="section-heading">Dossier setup</h2>
+            <h2 className="section-heading">Name this grant</h2>
           </div>
           <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-bold uppercase text-teal-900">
             Create only
@@ -244,7 +244,7 @@ export function IntakeDesk() {
         </div>
         <div className="p-5">
           <label className="form-label" htmlFor="grantName">
-            Opportunity Name
+            Grant opportunity name
           </label>
           <input
             id="grantName"
@@ -258,11 +258,11 @@ export function IntakeDesk() {
       </section>
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <div className="content-panel">
-          <div className="panel-header">
+        <div className="intake-panel">
+          <div className="intake-panel-header">
             <div>
-              <p className="eyebrow">File evidence</p>
-              <h2 className="section-heading">Dropzone</h2>
+              <p className="eyebrow">Add sources</p>
+              <h2 className="section-heading">Upload files</h2>
             </div>
             <p className="text-xs font-semibold text-slate-500">
               {fileCount}/{maxFiles} files
@@ -283,8 +283,8 @@ export function IntakeDesk() {
               }}
             />
             <button
-              className={`upload-dropzone min-h-72 ${
-                isDragging ? "upload-dropzone-active" : "upload-dropzone-idle"
+              className={`source-picker min-h-72 ${
+                isDragging ? "source-picker-active" : "source-picker-idle"
               }`}
               type="button"
               onClick={() => inputRef.current?.click()}
@@ -311,21 +311,21 @@ export function IntakeDesk() {
               </span>
               <span>
                 <span className="block text-base font-semibold text-slate-950">
-                  Drop PDF, DOCX, or TXT files
+                  Add PDF, DOCX, or TXT files
                 </span>
                 <span className="mt-1 block text-sm text-slate-500">
-                  Original files are saved into the private evidence bucket.
+                  Source documents are saved privately.
                 </span>
               </span>
             </button>
           </div>
         </div>
 
-        <div className="content-panel">
-          <div className="panel-header">
+        <div className="intake-panel">
+          <div className="intake-panel-header">
             <div>
-              <p className="eyebrow">Pasted evidence</p>
-              <h2 className="section-heading">Text shoebox</h2>
+              <p className="eyebrow">Add sources</p>
+              <h2 className="section-heading">Paste source text</h2>
             </div>
             <p className="text-xs font-semibold text-slate-500">
               {textCount}/{maxPastedSnippets} snippets
@@ -369,7 +369,7 @@ export function IntakeDesk() {
                 disabled={!pastedText.trim() || pastedText.length > maxPastedChars}
               >
                 <Plus aria-hidden size={16} />
-                Add Text to Queue
+                Add source text
               </button>
             </div>
           </div>
@@ -382,18 +382,18 @@ export function IntakeDesk() {
         </p>
       ) : null}
 
-      <section className="content-panel">
-        <div className="panel-header">
+      <section className="intake-panel">
+        <div className="intake-panel-header">
           <div>
-            <p className="eyebrow">Staging area</p>
-            <h2 className="section-heading">Evidence queue</h2>
+            <p className="eyebrow">Sources</p>
+            <h2 className="section-heading">Sources to analyze</h2>
           </div>
           <p className="text-sm font-semibold text-slate-500">
-            {queue.length} item{queue.length === 1 ? "" : "s"}
+            {sourceItems.length} item{sourceItems.length === 1 ? "" : "s"}
           </p>
         </div>
 
-        {queue.length === 0 ? (
+        {sourceItems.length === 0 ? (
           <div className="empty-state">
             <p className="text-sm leading-6 text-slate-500">
               Add files or pasted source text before analyzing this opportunity.
@@ -401,7 +401,7 @@ export function IntakeDesk() {
           </div>
         ) : (
           <div className="divide-y divide-stone-200">
-            {queue.map((item, index) => (
+            {sourceItems.map((item, index) => (
               <div
                 className="grid gap-4 px-5 py-4 lg:grid-cols-[2rem_minmax(0,1fr)_minmax(220px,0.45fr)_auto]"
                 key={item.id}
@@ -415,7 +415,7 @@ export function IntakeDesk() {
                 </div>
                 <div className="min-w-0">
                   <label className="form-label" htmlFor={`display-${item.id}`}>
-                    Display name
+                    Document name
                   </label>
                   <input
                     id={`display-${item.id}`}
@@ -455,10 +455,10 @@ export function IntakeDesk() {
                   ) : (
                     <div className="rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2">
                       <p className="text-xs font-bold uppercase text-slate-500">
-                        Stored as
+                        Saved as
                       </p>
                       <p className="mt-1 truncate text-sm text-slate-700">
-                        Private file evidence
+                        Uploaded file
                       </p>
                     </div>
                   )}

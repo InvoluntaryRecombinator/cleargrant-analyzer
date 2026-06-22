@@ -9,7 +9,7 @@ export default async function SignupPage() {
   const user = await getCurrentSupabaseUser();
 
   if (user) {
-    redirect("/dashboard");
+    redirect("/matrix");
   }
 
   return (
@@ -17,13 +17,13 @@ export default async function SignupPage() {
       <section className="auth-panel">
         <div className="space-y-3">
           <p className="eyebrow">ClearGrant Analyzer</p>
-          <h1 className="auth-heading">Create your workspace</h1>
+          <h1 className="auth-heading">Create your ClearGrant account</h1>
           <p className="text-sm leading-6 text-slate-600">
-            Set up a private triage workspace for grant document analysis.
+            Save your applicant profile and analyze grant opportunities privately.
           </p>
         </div>
 
-        <AuthForm action={signup} buttonLabel="Create account" />
+        <AuthForm action={signup} buttonLabel="Create account" pendingLabel="Creating account..." />
 
         <p className="text-sm text-slate-600">
           Already have an account?{" "}

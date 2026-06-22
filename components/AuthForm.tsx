@@ -7,11 +7,12 @@ import type { AuthFormState } from "@/app/actions/auth";
 type AuthFormProps = {
   action: (state: AuthFormState, formData: FormData) => Promise<AuthFormState>;
   buttonLabel: string;
+  pendingLabel: string;
 };
 
 const initialState: AuthFormState = {};
 
-export function AuthForm({ action, buttonLabel }: AuthFormProps) {
+export function AuthForm({ action, buttonLabel, pendingLabel }: AuthFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
@@ -56,7 +57,7 @@ export function AuthForm({ action, buttonLabel }: AuthFormProps) {
       ) : null}
 
       <button className="primary-button w-full" disabled={pending} type="submit">
-        {pending ? "Working..." : buttonLabel}
+        {pending ? pendingLabel : buttonLabel}
       </button>
     </form>
   );

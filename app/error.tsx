@@ -16,7 +16,7 @@ export default function Error({
           This page could not load.
         </h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          Retry the page or return to your workspace.
+          Retry the page or return to your comparison table.
         </p>
         <div className="button-row mt-6">
           <button
@@ -26,8 +26,8 @@ export default function Error({
           >
             Retry
           </button>
-          <Link className="primary-button" href="/dashboard">
-            Go to workspace
+          <Link className="primary-button" href="/matrix">
+            Open comparison table
           </Link>
         </div>
       </section>

@@ -9,7 +9,7 @@ export default async function LoginPage() {
   const user = await getCurrentSupabaseUser();
 
   if (user) {
-    redirect("/dashboard");
+    redirect("/matrix");
   }
 
   return (
@@ -17,16 +17,16 @@ export default async function LoginPage() {
       <section className="auth-panel">
         <div className="space-y-3">
           <p className="eyebrow">ClearGrant Analyzer</p>
-          <h1 className="auth-heading">Log in to your workspace</h1>
+          <h1 className="auth-heading">Log in to ClearGrant</h1>
           <p className="text-sm leading-6 text-slate-600">
-            Access your applicant profile and eligibility triage workspace.
+            Review saved grant analyses and update your applicant profile.
           </p>
         </div>
 
-        <AuthForm action={login} buttonLabel="Log in" />
+        <AuthForm action={login} buttonLabel="Log in" pendingLabel="Signing in..." />
 
         <p className="text-sm text-slate-600">
-          New workspace?{" "}
+          New to ClearGrant?{" "}
           <Link className="text-slate-950 underline-offset-4 hover:underline" href="/signup">
             Create an account
           </Link>

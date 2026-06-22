@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useState } from "react";
 
 import { saveProfile, type ProfileFormState } from "@/app/actions/profile";
 
@@ -87,6 +87,13 @@ const projectTypes = [
   "Emergency response",
 ];
 
+const sectionLinks = [
+  ["Applicant", "#profile-applicant"],
+  ["Location", "#profile-location"],
+  ["Program areas", "#profile-program"],
+  ["Registrations", "#profile-registrations"],
+] as const;
+
 function optionChecked(values: string[] | undefined, option: string) {
   return values?.includes(option) ?? false;
 }
@@ -103,16 +110,18 @@ function CheckboxGroup({
   values: string[] | undefined;
 }) {
   return (
-    <fieldset className="space-y-3">
-      <legend className="form-label">{label}</legend>
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+    <fieldset className="space-y-2">
+      <legend className="sr-only">{label}</legend>
+      <div className="flex items-center justify-between gap-3">
+        <p className="form-label">{label}</p>
+        <span className="text-xs font-semibold text-slate-500">
+          {values?.length ?? 0} selected
+        </span>
+      </div>
+      <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2 xl:grid-cols-3">
         {options.map((option) => (
-          <label
-            className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40"
-            key={option}
-          >
+          <label className="compact-check-row" key={option}>
             <input
-              className="h-4 w-4 shrink-0 accent-teal-700"
               defaultChecked={optionChecked(values, option)}
               name={name}
               type="checkbox"
@@ -126,6 +135,23 @@ function CheckboxGroup({
   );
 }
 
+function CapacityCheckbox({
+  defaultChecked,
+  name,
+  label,
+}: {
+  defaultChecked: boolean;
+  name: string;
+  label: string;
+}) {
+  return (
+    <label className="compact-check-row">
+      <input defaultChecked={defaultChecked} name={name} type="checkbox" />
+      <span>{label}</span>
+    </label>
+  );
+}
+
 export function ProfileForm({ profile, mode }: ProfileFormProps) {
   const [state, formAction, pending] = useActionState(
     saveProfile,
@@ -135,270 +161,287 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
     profile?.applicantType ?? applicantTypes[0],
   );
   const isIndividual = applicantType === "Individual applicant";
-  const redirectTo = mode === "onboarding" ? "/dashboard" : "";
-
-  const sectionLabel = useMemo(
-    () =>
-      mode === "onboarding"
-        ? "Create applicant profile"
-        : "Update applicant profile",
-    [mode],
-  );
+  const redirectTo = mode === "onboarding" ? "/matrix" : "";
 
   return (
-    <form action={formAction} className="profile-form">
+    <form action={formAction} className="profile-settings-form">
       <input name="redirectTo" type="hidden" value={redirectTo} />
 
-      <section className="grid gap-5 border-b border-stone-200 p-5">
-        <div>
-          <p className="eyebrow">Step 1</p>
-          <h2 className="section-heading">{sectionLabel}</h2>
-        </div>
+      <div className="settings-layout">
+        <aside className="settings-rail" aria-label="Profile sections">
+          <p className="text-xs font-bold uppercase text-slate-500">Sections</p>
+          <nav className="mt-3 grid gap-1">
+            {sectionLinks.map(([label, href]) => (
+              <a className="settings-rail-link" href={href} key={href}>
+                {label}
+              </a>
+            ))}
+          </nav>
+        </aside>
 
-        <div className="grid gap-5 md:grid-cols-2">
-          <div className="space-y-2">
-            <label className="form-label" htmlFor="applicantType">
-              Applicant type
-            </label>
-            <select
-              className="form-input"
-              id="applicantType"
-              name="applicantType"
-              onChange={(event) => setApplicantType(event.target.value)}
-              value={applicantType}
-            >
-              {applicantTypes.map((option) => (
-                <option key={option}>{option}</option>
-              ))}
-            </select>
-          </div>
+        <div className="settings-content">
+          <section className="settings-section" id="profile-applicant">
+            <div className="settings-section-header">
+              <div>
+                <h2 className="section-heading">Applicant</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  Basic legal and organization details used in each review.
+                </p>
+              </div>
+            </div>
 
-          {!isIndividual ? (
-            <div className="space-y-2">
-              <label className="form-label" htmlFor="organizationName">
-                Organization name
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="form-label" htmlFor="applicantType">
+                  Applicant type
+                </label>
+                <select
+                  className="form-input"
+                  id="applicantType"
+                  name="applicantType"
+                  onChange={(event) => setApplicantType(event.target.value)}
+                  value={applicantType}
+                >
+                  {applicantTypes.map((option) => (
+                    <option key={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+
+              {!isIndividual ? (
+                <div className="space-y-2">
+                  <label className="form-label" htmlFor="organizationName">
+                    Organization name
+                  </label>
+                  <input
+                    className="form-input"
+                    defaultValue={profile?.organizationName ?? ""}
+                    id="organizationName"
+                    name="organizationName"
+                    type="text"
+                  />
+                </div>
+              ) : (
+                <div className="rounded-md border border-gray-200 bg-slate-50 px-3 py-2 text-sm leading-6 text-slate-600">
+                  Organization fields are hidden for individual applicants.
+                </div>
+              )}
+
+              {!isIndividual ? (
+                <>
+                  <div className="space-y-2">
+                    <label className="form-label" htmlFor="legalStatus">
+                      Legal status
+                    </label>
+                    <select
+                      className="form-input"
+                      defaultValue={profile?.legalStatus ?? ""}
+                      id="legalStatus"
+                      name="legalStatus"
+                    >
+                      <option value="">Select status</option>
+                      {legalStatuses.map((option) => (
+                        <option key={option}>{option}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="form-label" htmlFor="taxStatus">
+                      Tax status
+                    </label>
+                    <select
+                      className="form-input"
+                      defaultValue={profile?.taxStatus ?? ""}
+                      id="taxStatus"
+                      name="taxStatus"
+                    >
+                      <option value="">Select status</option>
+                      {taxStatuses.map((option) => (
+                        <option key={option}>{option}</option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </section>
+
+          <section className="settings-section" id="profile-location">
+            <div className="settings-section-header">
+              <div>
+                <h2 className="section-heading">Applicant location</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  Use the applicant&apos;s primary location. Project service
+                  areas can be handled separately later.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="space-y-2">
+                <label className="form-label" htmlFor="country">
+                  Country
+                </label>
+                <input
+                  className="form-input"
+                  defaultValue={profile?.country ?? "United States"}
+                  id="country"
+                  name="country"
+                  type="text"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="form-label" htmlFor="state">
+                  State
+                </label>
+                <input
+                  className="form-input"
+                  defaultValue={profile?.state ?? ""}
+                  id="state"
+                  name="state"
+                  type="text"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="form-label" htmlFor="city">
+                  City
+                </label>
+                <input
+                  className="form-input"
+                  defaultValue={profile?.city ?? ""}
+                  id="city"
+                  name="city"
+                  type="text"
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-2">
+              <label className="form-label" htmlFor="missionStatement">
+                Brief description of applicant work
+              </label>
+              <textarea
+                className="form-input min-h-24 resize-y"
+                defaultValue={profile?.missionStatement ?? ""}
+                id="missionStatement"
+                name="missionStatement"
+                placeholder="Example: Provides after-school STEM programs for middle-school students in San Luis Obispo County."
+              />
+              <p className="text-xs leading-5 text-slate-500">
+                One or two sentences about the work this applicant does.
+              </p>
+            </div>
+          </section>
+
+          <section className="settings-section" id="profile-program">
+            <div className="settings-section-header">
+              <div>
+                <h2 className="section-heading">Program areas</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  Select the categories that commonly describe the applicant.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-5">
+              <CheckboxGroup
+                label="Focus areas"
+                name="focusAreas"
+                options={focusAreas}
+                values={profile?.focusAreas}
+              />
+
+              <CheckboxGroup
+                label="Populations served"
+                name="populationsServed"
+                options={populations}
+                values={profile?.populationsServed}
+              />
+
+              <CheckboxGroup
+                label="Project types"
+                name="projectTypes"
+                options={projectTypes}
+                values={profile?.projectTypes}
+              />
+            </div>
+          </section>
+
+          <section className="settings-section" id="profile-registrations">
+            <div className="settings-section-header">
+              <div>
+                <h2 className="section-heading">Registrations and funding</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  Common eligibility markers used during grant review.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2 xl:grid-cols-3">
+              <CapacityCheckbox
+                defaultChecked={profile?.hasFiscalSponsor ?? false}
+                label="Has fiscal sponsor"
+                name="hasFiscalSponsor"
+              />
+              <CapacityCheckbox
+                defaultChecked={profile?.hasEin ?? false}
+                label="Has an EIN"
+                name="hasEin"
+              />
+              <CapacityCheckbox
+                defaultChecked={profile?.hasSamRegistration ?? false}
+                label="Has SAM.gov registration"
+                name="hasSamRegistration"
+              />
+              <CapacityCheckbox
+                defaultChecked={profile?.hasUei ?? false}
+                label="Has a UEI"
+                name="hasUei"
+              />
+              <CapacityCheckbox
+                defaultChecked={profile?.canProvideMatchFunds ?? false}
+                label="Can provide matching funds"
+                name="canProvideMatchFunds"
+              />
+            </div>
+
+            <div className="mt-4 max-w-sm space-y-2">
+              <label className="form-label" htmlFor="minimumUsefulAward">
+                Minimum award amount to consider
               </label>
               <input
                 className="form-input"
-                defaultValue={profile?.organizationName ?? ""}
-                id="organizationName"
-                name="organizationName"
-                type="text"
+                defaultValue={profile?.minimumUsefulAward ?? ""}
+                id="minimumUsefulAward"
+                min={0}
+                name="minimumUsefulAward"
+                placeholder="25000"
+                type="number"
               />
             </div>
-          ) : null}
+          </section>
 
-          {!isIndividual ? (
-            <>
-              <div className="space-y-2">
-                <label className="form-label" htmlFor="legalStatus">
-                  Legal status
-                </label>
-                <select
-                  className="form-input"
-                  defaultValue={profile?.legalStatus ?? ""}
-                  id="legalStatus"
-                  name="legalStatus"
-                >
-                  <option value="">Select status</option>
-                  {legalStatuses.map((option) => (
-                    <option key={option}>{option}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="form-label" htmlFor="taxStatus">
-                  Tax status
-                </label>
-                <select
-                  className="form-input"
-                  defaultValue={profile?.taxStatus ?? ""}
-                  id="taxStatus"
-                  name="taxStatus"
-                >
-                  <option value="">Select status</option>
-                  {taxStatuses.map((option) => (
-                    <option key={option}>{option}</option>
-                  ))}
-                </select>
-              </div>
-            </>
+          {state.message ? (
+            <p
+              className={
+                state.ok
+                  ? "notice border-emerald-200 bg-emerald-50 text-emerald-900"
+                  : "notice notice-warning"
+              }
+            >
+              {state.message}
+            </p>
           ) : null}
         </div>
-      </section>
+      </div>
 
-      <section className="grid gap-5 border-b border-stone-200 p-5">
-        <div>
-          <p className="eyebrow">Step 2</p>
-          <h2 className="section-heading">Location and mission</h2>
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-3">
-          <div className="space-y-2">
-            <label className="form-label" htmlFor="country">
-              Country
-            </label>
-            <input
-              className="form-input"
-              defaultValue={profile?.country ?? "United States"}
-              id="country"
-              name="country"
-              type="text"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="form-label" htmlFor="state">
-              State
-            </label>
-            <input
-              className="form-input"
-              defaultValue={profile?.state ?? ""}
-              id="state"
-              name="state"
-              type="text"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="form-label" htmlFor="city">
-              City
-            </label>
-            <input
-              className="form-input"
-              defaultValue={profile?.city ?? ""}
-              id="city"
-              name="city"
-              type="text"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="form-label" htmlFor="missionStatement">
-            Mission or project focus
-          </label>
-          <textarea
-            className="form-input min-h-28 resize-y"
-            defaultValue={profile?.missionStatement ?? ""}
-            id="missionStatement"
-            name="missionStatement"
-          />
-        </div>
-      </section>
-
-      <section className="grid gap-6 border-b border-stone-200 p-5">
-        <div>
-          <p className="eyebrow">Step 3</p>
-          <h2 className="section-heading">Program fit</h2>
-        </div>
-
-        <CheckboxGroup
-          label="Focus areas"
-          name="focusAreas"
-          options={focusAreas}
-          values={profile?.focusAreas}
-        />
-
-        <CheckboxGroup
-          label="Populations served"
-          name="populationsServed"
-          options={populations}
-          values={profile?.populationsServed}
-        />
-
-        <CheckboxGroup
-          label="Project types"
-          name="projectTypes"
-          options={projectTypes}
-          values={profile?.projectTypes}
-        />
-      </section>
-
-      <section className="grid gap-5 p-5">
-        <div>
-          <p className="eyebrow">Step 4</p>
-          <h2 className="section-heading">Operational capacity</h2>
-        </div>
-
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
-          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
-            <input
-              className="h-4 w-4 shrink-0 accent-teal-700"
-              defaultChecked={profile?.hasFiscalSponsor ?? false}
-              name="hasFiscalSponsor"
-              type="checkbox"
-            />
-            <span>Fiscal sponsor available</span>
-          </label>
-          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
-            <input
-              className="h-4 w-4 shrink-0 accent-teal-700"
-              defaultChecked={profile?.hasEin ?? false}
-              name="hasEin"
-              type="checkbox"
-            />
-            <span>EIN available</span>
-          </label>
-          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
-            <input
-              className="h-4 w-4 shrink-0 accent-teal-700"
-              defaultChecked={profile?.hasSamRegistration ?? false}
-              name="hasSamRegistration"
-              type="checkbox"
-            />
-            <span>SAM registration available</span>
-          </label>
-          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
-            <input
-              className="h-4 w-4 shrink-0 accent-teal-700"
-              defaultChecked={profile?.hasUei ?? false}
-              name="hasUei"
-              type="checkbox"
-            />
-            <span>UEI available</span>
-          </label>
-          <label className="check-row flex min-h-11 items-center gap-2 rounded-md border border-stone-200 bg-[#fffdf8] px-3 py-2 text-sm leading-5 text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/40">
-            <input
-              className="h-4 w-4 shrink-0 accent-teal-700"
-              defaultChecked={profile?.canProvideMatchFunds ?? false}
-              name="canProvideMatchFunds"
-              type="checkbox"
-            />
-            <span>Can provide matching funds</span>
-          </label>
-        </div>
-
-        <div className="max-w-sm space-y-2">
-          <label className="form-label" htmlFor="minimumUsefulAward">
-            Minimum useful award
-          </label>
-          <input
-            className="form-input"
-            defaultValue={profile?.minimumUsefulAward ?? ""}
-            id="minimumUsefulAward"
-            min={0}
-            name="minimumUsefulAward"
-            placeholder="25000"
-            type="number"
-          />
-        </div>
-      </section>
-
-      {state.message ? (
-        <p
-          className={
-            state.ok
-              ? "notice border-emerald-200 bg-emerald-50 text-emerald-900"
-              : "notice notice-warning"
-          }
-        >
-          {state.message}
+      <div className="settings-save-bar">
+        <p className="text-sm text-slate-600">
+          Profile changes stay local until saved.
         </p>
-      ) : null}
-
-      <div className="form-footer">
         <button className="primary-button" disabled={pending} type="submit">
           {pending ? "Saving..." : "Save profile"}
         </button>

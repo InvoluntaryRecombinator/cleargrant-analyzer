@@ -1,23 +1,18 @@
 "use client";
 
-import { Home, Table2, UploadCloud, UserRound } from "lucide-react";
+import { Table2, UploadCloud, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
   {
-    href: "/dashboard",
-    label: "Home",
-    icon: Home,
-  },
-  {
     href: "/upload",
-    label: "Upload Grants",
+    label: "Add opportunity",
     icon: UploadCloud,
   },
   {
     href: "/matrix",
-    label: "Matrix",
+    label: "Compare",
     icon: Table2,
   },
   {

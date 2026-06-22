@@ -89,10 +89,10 @@ function apiErrorMessage(error: unknown) {
     message.includes("bucket") ||
     message.includes("storage")
   ) {
-    return "Evidence storage is unavailable. Confirm the private grant-evidence bucket exists.";
+    return "Files could not be saved. Try again or contact support.";
   }
 
-  return "Unable to create the grant dossier.";
+  return "Unable to create the grant opportunity.";
 }
 
 function toMatchProfile(
@@ -339,7 +339,7 @@ export async function POST(request: Request) {
     const evidenceSummary =
       storedDocuments.length === 1
         ? storedDocuments[0]?.displayName
-        : `${storedDocuments.length} evidence items`;
+        : `${storedDocuments.length} source items`;
 
     let extractedGrant: ExtractedGrant;
     let status: "analyzed" | "failed" = "analyzed";
@@ -469,7 +469,7 @@ export async function POST(request: Request) {
       await cleanupStoredFiles(supabase, uploadedPaths);
       console.error("Grouped intake database transaction failed", error);
       return NextResponse.json(
-        { error: "Unable to save the grant dossier." },
+        { error: "Unable to save the grant opportunity." },
         { status: 500 },
       );
     }

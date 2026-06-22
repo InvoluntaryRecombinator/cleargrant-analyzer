@@ -57,7 +57,7 @@ export async function login(
 
   await ensureAppUser(user);
 
-  redirect("/dashboard");
+  redirect("/matrix");
 }
 
 export async function signup(
@@ -93,7 +93,7 @@ export async function signup(
 
   await ensureAppUser(user);
 
-  redirect("/dashboard");
+  redirect("/matrix");
 }
 
 export async function logout() {

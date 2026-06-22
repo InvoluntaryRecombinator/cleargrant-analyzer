@@ -8,7 +8,7 @@ export default async function OnboardingPage() {
   const profile = await getProfileForUser(user.id);
 
   if (profile) {
-    redirect("/dashboard");
+    redirect("/matrix");
   }
 
   return (
@@ -18,8 +18,8 @@ export default async function OnboardingPage() {
           <p className="eyebrow">Onboarding</p>
           <h1 className="page-title">Build your applicant profile</h1>
           <p className="page-description">
-            This profile becomes the comparison baseline for extracted grant
-            requirements when you analyze documents.
+            This profile is used to compare grant opportunities against the
+            applicant.
           </p>
         </div>
       </section>

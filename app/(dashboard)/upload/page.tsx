@@ -12,14 +12,16 @@ export default async function UploadPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <section className="page-header">
+    <div className="space-y-5">
+      <section className="rounded-lg border border-gray-200 bg-white px-5 py-4 shadow-sm">
         <div>
-          <p className="eyebrow">Upload Grants</p>
-          <h1 className="page-title">Create a grant dossier</h1>
-          <p className="page-description">
-            Name a new opportunity, stage multiple files or pasted source text,
-            and run one grouped analysis against your saved applicant profile.
+          <p className="eyebrow">Add opportunity</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-normal text-slate-950">
+            Add a grant opportunity
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            Name a grant opportunity, add source documents or source text, and
+            run one analysis against your applicant profile.
           </p>
         </div>
       </section>
