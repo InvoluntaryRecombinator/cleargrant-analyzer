@@ -42,34 +42,24 @@ const baseGrantRecord = {
     primaryReason: "Saved profile does not overlap.",
     needsReviewItems: [{ requirement: "Location unclear" }],
   },
-  uploadedDocuments: [
-    {
-      sourceKind: "file",
-      extractionStatus: "completed",
-    },
-    {
-      sourceKind: "pasted_text",
-      extractionStatus: "completed",
-    },
-  ],
 };
 
 describe("buildGrantMatrixRow", () => {
   it("uses extracted JSON metadata when database snapshot fields are absent", () => {
     const row = buildGrantMatrixRow(baseGrantRecord);
 
-    expect(row.opportunityName).toBe("Zendesk Impact Awards");
-    expect(row.sourceSummary).toBe("2 sources: 1 file, 1 source text");
+    expect(row.titleLabel).toBe("Zendesk Impact Awards");
+    expect(row.sourceLabel).toBe("ZENDESK grant.txt");
     expect(row.funderLabel).toBe("Zendesk");
     expect(row.deadlineLabel).toBe("July 15, 2026, at 11:59 pm ET");
-    expect(row.fitLabel).toBe("Likely conflict");
-    expect(row.sourceHealthLabel).toBe("2 readable");
+    expect(row.statusLabel).toBe("Low Match");
+    expect(row.needsReviewCount).toBe(1);
   });
 
   it("falls back to award-like funding constraints when metadata award text is empty", () => {
     const row = buildGrantMatrixRow(baseGrantRecord);
 
-    expect(row.awardLabel).toBe("awards range from $10K to $50K");
+    expect(row.awardAmountLabel).toBe("awards range from $10K to $50K");
   });
 
   it("prefers metadata award text over funding constraint fallback", () => {
@@ -86,7 +76,7 @@ describe("buildGrantMatrixRow", () => {
       },
     });
 
-    expect(row.awardLabel).toBe("$25,000 implementation grant");
+    expect(row.awardAmountLabel).toBe("$25,000 implementation grant");
   });
 
   it("does not show matching fund requirements as award amounts", () => {
@@ -113,7 +103,7 @@ describe("buildGrantMatrixRow", () => {
       },
     });
 
-    expect(row.awardLabel).toBe("—");
+    expect(row.awardAmountLabel).toBe("Not stated");
   });
 
   it("formats parsed database awards when extraction award text is absent", () => {
@@ -133,7 +123,7 @@ describe("buildGrantMatrixRow", () => {
       },
     });
 
-    expect(row.awardLabel).toBe("$10,000-$50,000");
+    expect(row.awardAmountLabel).toBe("$10,000-$50,000");
   });
 
   it("ignores malformed extracted JSON instead of throwing during row mapping", () => {
@@ -153,28 +143,9 @@ describe("buildGrantMatrixRow", () => {
       },
     });
 
-    expect(row.opportunityName).toBe("old-row.txt");
-    expect(row.funderLabel).toBe("—");
-    expect(row.awardLabel).toBe("—");
-    expect(row.fitLabel).toBe("Review needed");
-  });
-
-  it("reports unreadable source health without raw extraction columns", () => {
-    const row = buildGrantMatrixRow({
-      ...baseGrantRecord,
-      uploadedDocuments: [
-        {
-          sourceKind: "file",
-          extractionStatus: "completed",
-        },
-        {
-          sourceKind: "file",
-          extractionStatus: "failed",
-        },
-      ],
-    });
-
-    expect(row.sourceSummary).toBe("2 sources: 2 files");
-    expect(row.sourceHealthLabel).toBe("1 readable, 1 unreadable");
+    expect(row.titleLabel).toBe("old-row.txt");
+    expect(row.funderLabel).toBe("Not stated");
+    expect(row.awardAmountLabel).toBe("Not stated");
+    expect(row.needsReviewCount).toBe(0);
   });
 });

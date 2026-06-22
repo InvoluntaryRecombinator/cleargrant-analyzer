@@ -4,6 +4,7 @@ import type {
   ExtractedRequirementCategory,
 } from "./matchGrantToProfile";
 import { formatGrantDeadlineLabel } from "./parseGrantDeadline";
+import { readableGrantStatus } from "./presentation";
 
 export type GrantMatrixRecord = {
   id: string;
@@ -26,30 +27,30 @@ export type GrantMatrixRecord = {
         needsReviewItems: unknown | null;
       }
     | null;
-  uploadedDocuments?: Array<{
-    sourceKind: string;
-    extractionStatus: string;
-  }>;
 };
 
 export type GrantMatrixRow = {
   id: string;
   extractedGrant: ExtractedGrant | null;
-  opportunityName: string;
+  titleLabel: string;
+  sourceLabel: string;
+  statusLabel: string;
+  primaryReason: string;
   funderLabel: string;
-  sourceSummary: string;
-  sourceHealthLabel: string;
-  fitLabel: string;
-  fitHelpText: string;
-  keyIssue: string;
   deadlineLabel: string;
-  awardLabel: string;
+  awardAmountLabel: string;
+  applicantRequirementLabel: string;
+  locationRequirementLabel: string;
+  legalTaxRequirementLabel: string;
+  hardRequirementCount: number;
+  needsReviewCount: number;
+  extractionConfidenceLabel: string;
 };
 
 export const extractionFailedText =
   "Extraction Failed: Document unreadable or unsupported.";
 
-const missingLabel = "—";
+const missingLabel = "Not stated";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -124,6 +125,21 @@ function asExtractedGrant(value: unknown): ExtractedGrant | null {
   };
 }
 
+function firstRequirement(
+  extractedGrant: ExtractedGrant | null,
+  categories: ExtractedRequirementCategory[],
+) {
+  const requirement = extractedGrant?.requirements.find((item) =>
+    categories.includes(item.category),
+  );
+
+  return requirement?.value ?? missingLabel;
+}
+
+function countNeedsReview(value: unknown) {
+  return Array.isArray(value) ? value.length : 0;
+}
+
 function formatUsd(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -187,119 +203,22 @@ function awardAmountLabel(record: GrantMatrixRecord, extractedGrant: ExtractedGr
   return fundingAward?.value ?? missingLabel;
 }
 
-function fitLabel(processingStatus: string, matchLabel: string | null | undefined) {
-  if (processingStatus === "failed") {
-    return "Analysis failed";
-  }
-
-  switch (matchLabel) {
-    case "High Match":
-      return "Likely fit";
-    case "Needs Review":
-      return "Review needed";
-    case "Low Match":
-      return "Likely conflict";
-    case "Medium Match":
-      return "Possible fit";
-    default:
-      return processingStatus === "processing" ? "Processing" : "Review needed";
-  }
-}
-
-function fitHelpText(label: string) {
-  switch (label) {
-    case "Likely fit":
-      return "A first-pass signal based on extracted requirements and your applicant profile. Not an official eligibility decision.";
-    case "Review needed":
-      return "ClearGrant found a requirement that needs a human read, usually because the source was unclear or could not be compared safely.";
-    case "Likely conflict":
-      return "ClearGrant found at least one extracted requirement that appears not to match the applicant profile.";
-    case "Analysis failed":
-      return "ClearGrant could not read enough source text to complete the review.";
-    default:
-      return "A first-pass review signal. Not an official eligibility decision.";
-  }
-}
-
-function sourceSummary(record: GrantMatrixRecord) {
-  const documents = record.uploadedDocuments ?? [];
-
-  if (documents.length === 0) {
-    return textValue(record.sourceFileName) ?? missingLabel;
-  }
-
-  const fileCount = documents.filter((document) => document.sourceKind === "file").length;
-  const textCount = documents.filter(
-    (document) => document.sourceKind === "pasted_text",
-  ).length;
-  const parts = [];
-
-  if (fileCount > 0) {
-    parts.push(`${fileCount} ${fileCount === 1 ? "file" : "files"}`);
-  }
-
-  if (textCount > 0) {
-    parts.push(`${textCount} source ${textCount === 1 ? "text" : "texts"}`);
-  }
-
-  return `${documents.length} ${documents.length === 1 ? "source" : "sources"}${
-    parts.length > 0 ? `: ${parts.join(", ")}` : ""
-  }`;
-}
-
-function sourceHealthLabel(record: GrantMatrixRecord) {
-  const documents = record.uploadedDocuments ?? [];
-
-  if (documents.length === 0) {
-    return missingLabel;
-  }
-
-  const unreadableCount = documents.filter(
-    (document) => document.extractionStatus === "failed",
-  ).length;
-  const readableCount = documents.length - unreadableCount;
-
-  if (unreadableCount > 0) {
-    return `${readableCount} readable, ${unreadableCount} unreadable`;
-  }
-
-  return `${readableCount} readable`;
-}
-
-function userFacingReason(record: GrantMatrixRecord, extractedGrant: ExtractedGrant | null) {
-  if (record.processingStatus === "failed") {
-    return "Sources could not be read. Add clearer documents or source text.";
-  }
-
-  const reason = textValue(record.matchResult?.primaryReason);
-
-  if (!reason) {
-    return extractedGrant?.requirements.length
-      ? "Open this review to inspect extracted requirements."
-      : "No requirements were extracted for comparison.";
-  }
-
-  if (reason.includes("not normalized enough for deterministic comparison")) {
-    return "A requirement needs a closer human read before it can be compared safely.";
-  }
-
-  return reason
-    .replaceAll("deterministic", "clear")
-    .replaceAll("match label", "fit rating");
-}
-
 export function buildGrantMatrixRow(record: GrantMatrixRecord): GrantMatrixRow {
   const extractedGrant = asExtractedGrant(record.extractionResult?.extractedJson);
-  const rawDeadlineLabel = formatGrantDeadlineLabel(
-    record.deadline,
-    extractedGrant?.metadata.deadline,
-  );
-  const opportunityName =
+  const titleLabel =
     textValue(record.title) ??
     textValue(extractedGrant?.metadata.grantTitle) ??
     textValue(record.sourceFileName) ??
-    "Grant opportunity";
-  const fit = fitLabel(record.processingStatus, record.matchResult?.matchLabel);
+    "Untitled grant";
+  const sourceLabel = textValue(record.sourceFileName) ?? "Uploaded document";
+  const statusLabel = readableGrantStatus(
+    record.processingStatus,
+    record.matchResult?.matchLabel,
+  );
+  const primaryReason =
+    record.processingStatus === "failed"
+      ? extractionFailedText
+      : textValue(record.matchResult?.primaryReason) ?? "Analysis is not complete.";
   const funderLabel =
     textValue(record.funder) ??
     textValue(extractedGrant?.metadata.funderName) ??
@@ -308,14 +227,28 @@ export function buildGrantMatrixRow(record: GrantMatrixRecord): GrantMatrixRow {
   return {
     id: record.id,
     extractedGrant,
-    opportunityName,
+    titleLabel,
+    sourceLabel,
+    statusLabel,
+    primaryReason,
     funderLabel,
-    sourceSummary: sourceSummary(record),
-    sourceHealthLabel: sourceHealthLabel(record),
-    fitLabel: fit,
-    fitHelpText: fitHelpText(fit),
-    keyIssue: userFacingReason(record, extractedGrant),
-    deadlineLabel: rawDeadlineLabel === "Not stated" ? missingLabel : rawDeadlineLabel,
-    awardLabel: awardAmountLabel(record, extractedGrant),
+    deadlineLabel: formatGrantDeadlineLabel(
+      record.deadline,
+      extractedGrant?.metadata.deadline,
+    ),
+    awardAmountLabel: awardAmountLabel(record, extractedGrant),
+    applicantRequirementLabel: firstRequirement(extractedGrant, ["applicant_type"]),
+    locationRequirementLabel: firstRequirement(extractedGrant, ["location"]),
+    legalTaxRequirementLabel: firstRequirement(extractedGrant, [
+      "legal_status",
+      "tax_status",
+    ]),
+    hardRequirementCount:
+      extractedGrant?.requirements.filter(
+        (requirement) => requirement.category !== "other_eligibility_note",
+      ).length ?? 0,
+    needsReviewCount: countNeedsReview(record.matchResult?.needsReviewItems),
+    extractionConfidenceLabel:
+      extractedGrant?.extractionConfidence ?? "Not available",
   };
 }
