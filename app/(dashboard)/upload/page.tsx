@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { UploadDropzone } from "@/components/UploadDropzone";
+import { IntakeDesk } from "@/components/IntakeDesk";
 import { getProfileForUser, requireUser } from "@/lib/auth";
 
 export default async function UploadPage() {
@@ -16,18 +16,15 @@ export default async function UploadPage() {
       <section className="page-header">
         <div>
           <p className="eyebrow">Upload Grants</p>
-          <h1 className="page-title">Analyze grant documents</h1>
+          <h1 className="page-title">Create a grant dossier</h1>
           <p className="page-description">
-            Upload PDF, DOCX, or TXT files. Each document is processed
-            separately, compared against your applicant profile, and saved to
-            the matrix for review.
+            Name a new opportunity, stage multiple files or pasted source text,
+            and run one grouped analysis against your saved applicant profile.
           </p>
         </div>
       </section>
 
-      <section className="form-panel">
-        <UploadDropzone />
-      </section>
+      <IntakeDesk />
     </div>
   );
 }
