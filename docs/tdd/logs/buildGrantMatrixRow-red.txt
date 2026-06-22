@@ -1,0 +1,98 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/buildGrantMatrixRow.test.ts (6 tests | 5 failed) 16ms
+     × uses extracted JSON metadata when database snapshot fields are absent 9ms
+     × falls back to award-like funding constraints when metadata award text is empty 1ms
+     × prefers metadata award text over funding constraint fallback 1ms
+     × formats parsed database awards when extraction award text is absent 0ms
+     × ignores malformed extracted JSON instead of throwing during row mapping 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/buildGrantMatrixRow.test.ts > buildGrantMatrixRow > uses extracted JSON metadata when database snapshot fields are absent
+AssertionError: expected 'Untitled grant' to be 'Zendesk Impact Awards' // Object.is equality
+
+Expected: "Zendesk Impact Awards"
+Received: "Untitled grant"
+
+ ❯ utils/buildGrantMatrixRow.test.ts:51:28
+     49|     const row = buildGrantMatrixRow(baseGrantRecord);
+     50|
+     51|     expect(row.titleLabel).toBe("Zendesk Impact Awards");
+       |                            ^
+     52|     expect(row.sourceLabel).toBe("ZENDESK grant.txt");
+     53|     expect(row.funderLabel).toBe("Zendesk");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  utils/buildGrantMatrixRow.test.ts > buildGrantMatrixRow > falls back to award-like funding constraints when metadata award text is empty
+AssertionError: expected 'Not stated' to be 'awards range from $10K to $50K' // Object.is equality
+
+Expected: "awards range from $10K to $50K"
+Received: "Not stated"
+
+ ❯ utils/buildGrantMatrixRow.test.ts:62:34
+     60|     const row = buildGrantMatrixRow(baseGrantRecord);
+     61|
+     62|     expect(row.awardAmountLabel).toBe("awards range from $10K to $50K"…
+       |                                  ^
+     63|   });
+     64|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  utils/buildGrantMatrixRow.test.ts > buildGrantMatrixRow > prefers metadata award text over funding constraint fallback
+AssertionError: expected 'Not stated' to be '$25,000 implementation grant' // Object.is equality
+
+Expected: "$25,000 implementation grant"
+Received: "Not stated"
+
+ ❯ utils/buildGrantMatrixRow.test.ts:79:34
+     77|     });
+     78|
+     79|     expect(row.awardAmountLabel).toBe("$25,000 implementation grant");
+       |                                  ^
+     80|   });
+     81|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  utils/buildGrantMatrixRow.test.ts > buildGrantMatrixRow > formats parsed database awards when extraction award text is absent
+AssertionError: expected 'Not stated' to be '$10,000-$50,000' // Object.is equality
+
+Expected: "$10,000-$50,000"
+Received: "Not stated"
+
+ ❯ utils/buildGrantMatrixRow.test.ts:126:34
+    124|     });
+    125|
+    126|     expect(row.awardAmountLabel).toBe("$10,000-$50,000");
+       |                                  ^
+    127|   });
+    128|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  utils/buildGrantMatrixRow.test.ts > buildGrantMatrixRow > ignores malformed extracted JSON instead of throwing during row mapping
+AssertionError: expected 'Untitled grant' to be 'old-row.txt' // Object.is equality
+
+Expected: "old-row.txt"
+Received: "Untitled grant"
+
+ ❯ utils/buildGrantMatrixRow.test.ts:146:28
+    144|     });
+    145|
+    146|     expect(row.titleLabel).toBe("old-row.txt");
+       |                            ^
+    147|     expect(row.funderLabel).toBe("Not stated");
+    148|     expect(row.awardAmountLabel).toBe("Not stated");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed | 13 passed (14)
+      Tests  5 failed | 52 passed (57)
+   Start at  03:11:08
+   Duration  486ms (transform 342ms, setup 0ms, import 526ms, tests 71ms, environment 1ms)
+
