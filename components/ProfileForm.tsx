@@ -108,7 +108,7 @@ function SectionIntro({
   description: string;
 }) {
   return (
-    <div className="md:col-span-1">
+    <div className="border-b border-stone-200 bg-stone-50 px-4 py-3 md:col-span-1">
       <h2 className="text-base font-semibold text-slate-950">{title}</h2>
       <p className="mt-1 max-w-xs text-sm leading-6 text-slate-500">
         {description}

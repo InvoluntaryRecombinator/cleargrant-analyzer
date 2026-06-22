@@ -36,7 +36,7 @@ const maxPastedChars = 40_000;
 const panelClass =
   "overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm";
 const panelHeaderClass =
-  "flex items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 py-3";
+  "flex items-center justify-between gap-3 border-b border-stone-200 bg-stone-50 px-4 py-3";
 const eyebrowClass =
   "text-xs font-bold uppercase tracking-normal text-slate-500";
 const headingClass = "text-base font-semibold text-slate-950";
