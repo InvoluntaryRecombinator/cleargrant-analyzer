@@ -1,0 +1,25 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/encryption.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/encryption.test.ts [ utils/encryption.test.ts ]
+Error: Cannot find module './encryption' imported from /Users/jw/cleargrant-analyzer/utils/encryption.test.ts
+ ❯ utils/encryption.test.ts:3:1
+      1| import { afterEach, beforeEach, describe, expect, it } from "vitest";
+      2|
+      3| import { decryptApiKey, encryptApiKey } from "./encryption";
+       | ^
+      4|
+      5| const validMasterKey = Buffer.alloc(32, 7).toString("base64");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 14 passed (15)
+      Tests  59 passed (59)
+   Start at  04:52:05
+   Duration  389ms (transform 294ms, setup 0ms, import 466ms, tests 80ms, environment 1ms)
+
