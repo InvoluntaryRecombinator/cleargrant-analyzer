@@ -1,7 +1,15 @@
 export function generateDocumentTitle(
-  _customName: string | null,
-  _fileType: string,
-  _index: number,
+  customName: string | null,
+  fileType: string,
+  index: number,
 ) {
-  return "";
+  if (customName) {
+    return customName;
+  }
+
+  if (fileType === "txt") {
+    return `Pasted_Text_${index}`;
+  }
+
+  return `Uploaded_${fileType.toUpperCase()}_${index}`;
 }
