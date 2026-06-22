@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { ensureAppUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import {
+  deleteOpenAiApiKey,
+  getOpenAiKeyStatus,
+  saveOpenAiApiKey,
+} from "@/lib/openaiKeyVault";
 import { createClient } from "@/lib/supabase/server";
-import { encryptApiKey } from "@/utils/encryption";
 
 export const runtime = "nodejs";
 
@@ -20,11 +23,42 @@ function rawApiKeyFromBody(value: unknown) {
   return apiKey.length > 0 ? apiKey : null;
 }
 
-export async function POST(request: Request) {
+function rawLabelFromBody(value: unknown) {
+  if (!isRecord(value) || typeof value.label !== "string") {
+    return null;
+  }
+
+  const label = value.label.trim();
+  return label.length > 0 ? label : null;
+}
+
+async function requireAuthenticatedAppUser() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  await ensureAppUser(user);
+
+  return user;
+}
+
+export async function GET() {
+  const user = await requireAuthenticatedAppUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  return NextResponse.json(await getOpenAiKeyStatus(user.id));
+}
+
+export async function POST(request: Request) {
+  const user = await requireAuthenticatedAppUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -32,6 +66,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   const apiKey = rawApiKeyFromBody(body);
+  const label = rawLabelFromBody(body);
 
   if (!apiKey) {
     return NextResponse.json(
@@ -40,19 +75,21 @@ export async function POST(request: Request) {
     );
   }
 
-  await ensureAppUser(user);
-
-  const encrypted = encryptApiKey(apiKey);
-
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      encryptedOpenAiKey: encrypted.encryptedText,
-      openAiKeyIv: encrypted.iv,
-    },
+  const status = await saveOpenAiApiKey({
+    userId: user.id,
+    apiKey,
+    label,
   });
 
-  return NextResponse.json({ hasCustomKey: true });
+  return NextResponse.json(status);
+}
+
+export async function DELETE() {
+  const user = await requireAuthenticatedAppUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  return NextResponse.json(await deleteOpenAiApiKey(user.id));
 }

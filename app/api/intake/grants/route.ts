@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { ensureAppUser, getProfileForUser } from "@/lib/auth";
 import { extractGroupedGrantRequirements } from "@/lib/extraction/openai";
 import { extractTextFromFile } from "@/lib/extraction/text";
+import { resolveOpenAiApiKeyForUser } from "@/lib/openaiKeyVault";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { buildEvidenceSourceBlocks } from "@/utils/buildEvidenceSourceBlocks";
@@ -15,6 +16,7 @@ import {
   type MatchProfile,
 } from "@/utils/matchGrantToProfile";
 import { normalizePastedEvidence } from "@/utils/normalizePastedEvidence";
+import { extractionErrorMessageForOpenAiKey } from "@/utils/openAiError";
 import { parseGrantDeadline } from "@/utils/parseGrantDeadline";
 import {
   validateCreateOpportunityIntake,
@@ -344,6 +346,8 @@ export async function POST(request: Request) {
     let extractedGrant: ExtractedGrant;
     let status: "analyzed" | "failed" = "analyzed";
     let errorMessage: string | null = null;
+    let openAiKey: Awaited<ReturnType<typeof resolveOpenAiApiKeyForUser>> | null =
+      null;
 
     if (!sourceBlockResult.promptText) {
       status = "failed";
@@ -354,7 +358,9 @@ export async function POST(request: Request) {
       });
     } else {
       try {
+        openAiKey = await resolveOpenAiApiKeyForUser(user.id);
         const openAiExtraction = await extractGroupedGrantRequirements({
+          apiKey: openAiKey.apiKey,
           opportunityName: validation.normalizedName,
           sourceBlocks: sourceBlockResult.promptText,
           extractionNotes: analysisNotes,
@@ -362,7 +368,15 @@ export async function POST(request: Request) {
         extractedGrant = mergeExtractionNotes(openAiExtraction, analysisNotes);
       } catch (error) {
         status = "failed";
-        errorMessage = "Extraction Failed: Document unreadable or unsupported.";
+        errorMessage =
+          openAiKey
+            ? extractionErrorMessageForOpenAiKey({
+                error,
+                keySource: openAiKey.source,
+                keyLabel: openAiKey.keyLabel,
+              })
+            : null;
+        errorMessage ??= "Extraction Failed: Document unreadable or unsupported.";
         extractedGrant = failureExtractionSnapshot({
           grantName: validation.normalizedName,
           notes: [

@@ -2,7 +2,6 @@ import "server-only";
 
 import OpenAI from "openai";
 
-import { getRequiredEnv } from "@/lib/env";
 import {
   buildInitialExtractionPrompt,
   grantExtractionSystemRules,
@@ -107,14 +106,16 @@ ${text}`;
 }
 
 async function requestStructuredExtraction({
+  apiKey,
   systemPrompt,
   userPrompt,
 }: {
+  apiKey: string;
   systemPrompt: string;
   userPrompt: string;
 }) {
   const openai = new OpenAI({
-    apiKey: getRequiredEnv("OPENAI_API_KEY"),
+    apiKey,
   });
 
   const response = await openai.responses.create({
@@ -197,23 +198,28 @@ function assertExtractedGrant(value: unknown): asserts value is ExtractedGrant {
 }
 
 export async function extractGrantRequirements({
+  apiKey,
   fileName,
   text,
 }: {
+  apiKey: string;
   fileName: string;
   text: string;
 }) {
   return requestStructuredExtraction({
+    apiKey,
     systemPrompt: grantExtractionSystemRules.join(" "),
     userPrompt: extractionPrompt(fileName, text),
   });
 }
 
 export async function extractGroupedGrantRequirements({
+  apiKey,
   opportunityName,
   sourceBlocks,
   extractionNotes,
 }: {
+  apiKey: string;
   opportunityName: string;
   sourceBlocks: string;
   extractionNotes?: string[];
@@ -224,5 +230,8 @@ export async function extractGroupedGrantRequirements({
     extractionNotes,
   });
 
-  return requestStructuredExtraction(prompt);
+  return requestStructuredExtraction({
+    apiKey,
+    ...prompt,
+  });
 }

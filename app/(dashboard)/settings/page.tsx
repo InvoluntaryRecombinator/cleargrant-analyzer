@@ -1,6 +1,11 @@
 import { SettingsForm } from "@/components/SettingsForm";
+import { requireUser } from "@/lib/auth";
+import { getOpenAiKeyStatus } from "@/lib/openaiKeyVault";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const user = await requireUser();
+  const keyStatus = await getOpenAiKeyStatus(user.id);
+
   return (
     <div className="space-y-5">
       <section className="rounded-lg border border-teal-100 bg-teal-50 px-6 py-6 shadow-sm">
@@ -24,7 +29,7 @@ export default function SettingsPage() {
           </p>
         </div>
         <div className="px-5 py-5">
-          <SettingsForm />
+          <SettingsForm initialStatus={keyStatus} />
         </div>
       </section>
     </div>

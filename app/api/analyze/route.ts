@@ -3,12 +3,14 @@ import { NextResponse } from "next/server";
 import { ensureAppUser, getProfileForUser } from "@/lib/auth";
 import { extractGrantRequirements } from "@/lib/extraction/openai";
 import { extractTextFromFile } from "@/lib/extraction/text";
+import { resolveOpenAiApiKeyForUser } from "@/lib/openaiKeyVault";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import {
   matchGrantToProfile,
   type MatchProfile,
 } from "@/utils/matchGrantToProfile";
+import { extractionErrorMessageForOpenAiKey } from "@/utils/openAiError";
 import { parseGrantDeadline } from "@/utils/parseGrantDeadline";
 
 export const runtime = "nodejs";
@@ -42,7 +44,22 @@ function toMatchProfile(
   };
 }
 
-function errorMessage(error: unknown) {
+function errorMessage(
+  error: unknown,
+  openAiKey?: Awaited<ReturnType<typeof resolveOpenAiApiKeyForUser>>,
+) {
+  const keyError = openAiKey
+    ? extractionErrorMessageForOpenAiKey({
+        error,
+        keySource: openAiKey.source,
+        keyLabel: openAiKey.keyLabel,
+      })
+    : null;
+
+  if (keyError) {
+    return keyError;
+  }
+
   const message = error instanceof Error ? error.message : "";
 
   if (message.includes("20 MB limit")) {
@@ -96,6 +113,7 @@ export async function POST(request: Request) {
 
   const results = [];
   const matchProfile = toMatchProfile(profile);
+  const openAiKey = await resolveOpenAiApiKeyForUser(user.id);
 
   for (const file of files) {
     const grant = await prisma.grant.create({
@@ -124,6 +142,7 @@ export async function POST(request: Request) {
       });
 
       const extractedGrant = await extractGrantRequirements({
+        apiKey: openAiKey.apiKey,
         fileName: file.name,
         text: extractedText.text,
       });
@@ -173,7 +192,7 @@ export async function POST(request: Request) {
         matchLabel: matchResult.matchLabel,
       });
     } catch (error) {
-      const message = errorMessage(error);
+      const message = errorMessage(error, openAiKey);
 
       await prisma.$transaction([
         prisma.extractionResult.create({

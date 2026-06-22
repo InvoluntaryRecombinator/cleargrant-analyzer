@@ -17,6 +17,8 @@ model User {
   email              String   @unique
   encryptedOpenAiKey String?
   openAiKeyIv        String?
+  openAiKeyLabel     String?
+  openAiKeyUpdatedAt DateTime?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
