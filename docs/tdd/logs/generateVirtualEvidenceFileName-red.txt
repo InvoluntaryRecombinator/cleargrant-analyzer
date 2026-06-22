@@ -1,0 +1,51 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/generateVirtualEvidenceFileName.test.ts (2 tests | 2 failed) 3ms
+     × generates deterministic pasted text filenames 2ms
+     × normalizes invalid and fractional indexes to a safe positive integer 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/generateVirtualEvidenceFileName.test.ts > generateVirtualEvidenceFileName > generates deterministic pasted text filenames
+AssertionError: expected '' to be 'pasted-text-snippet-1.txt' // Object.is equality
+
+- Expected
++ Received
+
+- pasted-text-snippet-1.txt
+
+ ❯ utils/generateVirtualEvidenceFileName.test.ts:7:48
+      5| describe("generateVirtualEvidenceFileName", () => {
+      6|   it("generates deterministic pasted text filenames", () => {
+      7|     expect(generateVirtualEvidenceFileName(1)).toBe(
+       |                                                ^
+      8|       "pasted-text-snippet-1.txt",
+      9|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  utils/generateVirtualEvidenceFileName.test.ts > generateVirtualEvidenceFileName > normalizes invalid and fractional indexes to a safe positive integer
+AssertionError: expected '' to be 'pasted-text-snippet-1.txt' // Object.is equality
+
+- Expected
++ Received
+
+- pasted-text-snippet-1.txt
+
+ ❯ utils/generateVirtualEvidenceFileName.test.ts:16:48
+     14|
+     15|   it("normalizes invalid and fractional indexes to a safe positive int…
+     16|     expect(generateVirtualEvidenceFileName(0)).toBe(
+       |                                                ^
+     17|       "pasted-text-snippet-1.txt",
+     18|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  01:21:42
+   Duration  106ms (transform 9ms, setup 0ms, import 14ms, tests 3ms, environment 0ms)
+
