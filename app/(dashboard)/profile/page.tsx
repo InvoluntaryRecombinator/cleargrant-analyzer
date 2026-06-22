@@ -30,7 +30,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="space-y-5">
-      <section className="rounded-lg border border-stone-200 bg-stone-50 px-5 py-4 shadow-sm">
+      <section className="rounded-lg border border-teal-100 bg-teal-50/60 px-5 py-4 shadow-sm">
         <div>
           <p className="eyebrow">Applicant profile</p>
           <h1 className="mt-2 text-2xl font-semibold tracking-normal text-slate-950">

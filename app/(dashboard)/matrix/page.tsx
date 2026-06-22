@@ -39,7 +39,7 @@ export default async function MatrixPage() {
 
   return (
     <div className="space-y-8">
-      <section className="page-header rounded-lg border border-stone-200 bg-stone-50 px-5 py-4 shadow-sm">
+      <section className="page-header rounded-lg border border-teal-100 bg-teal-50/60 px-5 py-4 shadow-sm">
         <div>
           <p className="eyebrow">Matrix Dashboard</p>
           <h1 className="page-title">Grant eligibility matrix</h1>
@@ -49,7 +49,10 @@ export default async function MatrixPage() {
             decisions.
           </p>
         </div>
-        <Link className="primary-button" href="/upload">
+        <Link
+          className="inline-flex min-h-9 items-center justify-center rounded-md border border-teal-700 bg-teal-700 px-3 text-sm font-semibold text-white transition hover:bg-teal-800"
+          href="/upload"
+        >
           Upload grants
         </Link>
       </section>
