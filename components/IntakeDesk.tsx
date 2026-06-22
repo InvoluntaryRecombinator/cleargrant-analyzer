@@ -33,6 +33,22 @@ const maxFiles = 10;
 const maxFileBytes = 20 * 1024 * 1024;
 const maxPastedSnippets = 10;
 const maxPastedChars = 40_000;
+const panelClass =
+  "overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm";
+const panelHeaderClass =
+  "flex items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 py-3";
+const eyebrowClass =
+  "text-xs font-bold uppercase tracking-normal text-slate-500";
+const headingClass = "text-base font-semibold text-slate-950";
+const labelClass = "block text-sm font-semibold leading-5 text-slate-700";
+const inputClass =
+  "w-full max-w-lg rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15";
+const textareaClass =
+  "w-full max-w-2xl rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-6 text-slate-950 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15";
+const secondaryButtonClass =
+  "inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60";
+const primaryButtonClass =
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-teal-700 bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60";
 
 function createId() {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
@@ -232,23 +248,23 @@ export function IntakeDesk() {
 
   return (
     <div className="space-y-6">
-      <section className="intake-panel">
-        <div className="intake-panel-header">
+      <section className={panelClass}>
+        <div className={panelHeaderClass}>
           <div>
-            <p className="eyebrow">New opportunity</p>
-            <h2 className="section-heading">Name this grant</h2>
+            <p className={eyebrowClass}>New opportunity</p>
+            <h2 className={headingClass}>Name this grant</h2>
           </div>
           <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-bold uppercase text-teal-900">
             Create only
           </span>
         </div>
         <div className="p-5">
-          <label className="form-label" htmlFor="grantName">
+          <label className={labelClass} htmlFor="grantName">
             Grant opportunity name
           </label>
           <input
             id="grantName"
-            className="form-input mt-2"
+            className={`${inputClass} mt-2`}
             value={grantName}
             onChange={(event) => setGrantName(event.target.value)}
             placeholder="California Dream Fund"
@@ -258,11 +274,11 @@ export function IntakeDesk() {
       </section>
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <div className="intake-panel">
-          <div className="intake-panel-header">
+        <div className={panelClass}>
+          <div className={panelHeaderClass}>
             <div>
-              <p className="eyebrow">Add sources</p>
-              <h2 className="section-heading">Upload files</h2>
+              <p className={eyebrowClass}>Add sources</p>
+              <h2 className={headingClass}>Upload files</h2>
             </div>
             <p className="text-xs font-semibold text-slate-500">
               {fileCount}/{maxFiles} files
@@ -283,8 +299,10 @@ export function IntakeDesk() {
               }}
             />
             <button
-              className={`source-picker min-h-72 ${
-                isDragging ? "source-picker-active" : "source-picker-idle"
+              className={`flex min-h-64 w-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-6 text-center transition focus:outline-none focus:ring-4 focus:ring-teal-600/15 ${
+                isDragging
+                  ? "border-teal-600 bg-slate-50 shadow-sm"
+                  : "border-slate-300 bg-white hover:border-teal-600 hover:bg-slate-50"
               }`}
               type="button"
               onClick={() => inputRef.current?.click()}
@@ -306,7 +324,7 @@ export function IntakeDesk() {
                 addFiles(event.dataTransfer.files);
               }}
             >
-              <span className="upload-icon">
+              <span className="flex h-12 w-12 items-center justify-center rounded-lg border border-teal-200 bg-teal-50 text-teal-800">
                 <UploadCloud aria-hidden size={22} />
               </span>
               <span>
@@ -321,11 +339,11 @@ export function IntakeDesk() {
           </div>
         </div>
 
-        <div className="intake-panel">
-          <div className="intake-panel-header">
+        <div className={panelClass}>
+          <div className={panelHeaderClass}>
             <div>
-              <p className="eyebrow">Add sources</p>
-              <h2 className="section-heading">Paste source text</h2>
+              <p className={eyebrowClass}>Add sources</p>
+              <h2 className={headingClass}>Paste source text</h2>
             </div>
             <p className="text-xs font-semibold text-slate-500">
               {textCount}/{maxPastedSnippets} snippets
@@ -333,12 +351,12 @@ export function IntakeDesk() {
           </div>
           <div className="space-y-4 p-5">
             <div>
-              <label className="form-label" htmlFor="sourceUrl">
+              <label className={labelClass} htmlFor="sourceUrl">
                 Optional source URL
               </label>
               <input
                 id="sourceUrl"
-                className="form-input mt-2"
+                className={`${inputClass} mt-2`}
                 value={pastedSourceUrl}
                 onChange={(event) => setPastedSourceUrl(event.target.value)}
                 placeholder="https://funder.org/grants/guidelines"
@@ -346,12 +364,12 @@ export function IntakeDesk() {
               />
             </div>
             <div>
-              <label className="form-label" htmlFor="pastedText">
+              <label className={labelClass} htmlFor="pastedText">
                 Source text
               </label>
               <textarea
                 id="pastedText"
-                className="form-input mt-2 min-h-52 resize-y"
+                className={`${textareaClass} mt-2 min-h-52 resize-y`}
                 value={pastedText}
                 onChange={(event) => setPastedText(event.target.value)}
                 placeholder="Paste eligibility guidelines, FAQ copy, or notes from a funder page."
@@ -363,7 +381,7 @@ export function IntakeDesk() {
             </div>
             <div className="flex justify-end">
               <button
-                className="secondary-button"
+                className={secondaryButtonClass}
                 type="button"
                 onClick={addPastedText}
                 disabled={!pastedText.trim() || pastedText.length > maxPastedChars}
@@ -377,16 +395,19 @@ export function IntakeDesk() {
       </section>
 
       {message ? (
-        <p className="notice notice-warning" aria-live="polite">
+        <p
+          className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm leading-6 text-amber-900"
+          aria-live="polite"
+        >
           {message}
         </p>
       ) : null}
 
-      <section className="intake-panel">
-        <div className="intake-panel-header">
+      <section className={panelClass}>
+        <div className={panelHeaderClass}>
           <div>
-            <p className="eyebrow">Sources</p>
-            <h2 className="section-heading">Sources to analyze</h2>
+            <p className={eyebrowClass}>Sources</p>
+            <h2 className={headingClass}>Sources to analyze</h2>
           </div>
           <p className="text-sm font-semibold text-slate-500">
             {sourceItems.length} item{sourceItems.length === 1 ? "" : "s"}
@@ -394,7 +415,7 @@ export function IntakeDesk() {
         </div>
 
         {sourceItems.length === 0 ? (
-          <div className="empty-state">
+          <div className="p-5">
             <p className="text-sm leading-6 text-slate-500">
               Add files or pasted source text before analyzing this opportunity.
             </p>
@@ -414,12 +435,12 @@ export function IntakeDesk() {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <label className="form-label" htmlFor={`display-${item.id}`}>
+                  <label className={labelClass} htmlFor={`display-${item.id}`}>
                     Document name
                   </label>
                   <input
                     id={`display-${item.id}`}
-                    className="form-input mt-2"
+                    className={`${inputClass} mt-2`}
                     value={item.displayName}
                     onChange={(event) =>
                       updateDisplayName(item.id, event.target.value)
@@ -436,14 +457,14 @@ export function IntakeDesk() {
                   {item.kind === "text" ? (
                     <>
                       <label
-                        className="form-label"
+                        className={labelClass}
                         htmlFor={`source-url-${item.id}`}
                       >
                         Source URL
                       </label>
                       <input
                         id={`source-url-${item.id}`}
-                        className="form-input mt-2"
+                        className={`${inputClass} mt-2`}
                         value={item.sourceUrl}
                         onChange={(event) =>
                           updateSourceUrl(item.id, event.target.value)
@@ -465,7 +486,7 @@ export function IntakeDesk() {
                 </div>
                 <div className="flex items-end justify-end">
                   <button
-                    className="secondary-button !min-h-10 !px-3"
+                    className="inline-flex min-h-10 items-center justify-center rounded-md border border-gray-300 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                     type="button"
                     onClick={() => removeItem(item.id)}
                     aria-label={`Remove ${item.displayName}`}
@@ -478,9 +499,9 @@ export function IntakeDesk() {
           </div>
         )}
 
-        <div className="form-footer">
+        <div className="flex items-center justify-end border-t border-gray-200 bg-slate-50 px-5 py-4">
           <button
-            className="primary-button"
+            className={primaryButtonClass}
             type="button"
             disabled={!canAnalyze}
             onClick={analyzeOpportunity}
