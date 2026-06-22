@@ -267,7 +267,7 @@ export function IntakeDesk() {
             className={`${inputClass} mt-2`}
             value={grantName}
             onChange={(event) => setGrantName(event.target.value)}
-            placeholder="California Dream Fund"
+            placeholder=""
             type="text"
           />
         </div>

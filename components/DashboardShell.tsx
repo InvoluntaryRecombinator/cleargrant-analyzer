@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { logout } from "@/app/actions/auth";
+import GeminiLogo from "@/assets/gemini-svg.svg";
 import { DashboardNav } from "@/components/DashboardNav";
 
 type DashboardShellProps = {
@@ -14,9 +16,7 @@ export function DashboardShell({ children, email }: DashboardShellProps) {
       <header className="sticky top-0 z-40 border-b border-[#BFA486] bg-[#D8C3A5] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-3 sm:px-6">
           <Link className="flex min-w-max items-center gap-3" href="/matrix">
-            <span className="flex h-10 w-10 items-center justify-center rounded-md bg-slate-950 text-sm font-black tracking-normal text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
-              CG
-            </span>
+            <Image src={GeminiLogo} alt="Logo" width={32} height={32} className="mr-2" />
             <span>
               <span className="block text-sm font-semibold tracking-normal text-slate-950">
                 ClearGrant

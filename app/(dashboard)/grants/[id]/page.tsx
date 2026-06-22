@@ -128,7 +128,7 @@ export default async function GrantDetailPage({
             {statusLabel}
           </span>
         </div>
-        <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
+        <div className="rounded-lg border border-stone-200 bg-[#D8C3A5] p-5 shadow-sm">
           <p className="metric-label">Funder</p>
           <p className="metric-value">{grant.funder ?? "Not stated"}</p>
         </div>
@@ -139,7 +139,7 @@ export default async function GrantDetailPage({
           <h3 className="text-base font-semibold text-slate-950">
             Opportunity Overview
           </h3>
-          <p className="text-sm leading-6 text-slate-600">
+          <p className="text-base leading-7 text-slate-600">
             This opportunity has been processed by the ClearGrant Analyzer. The
             following baseline constraints and eligibility criteria were
             extracted directly from the source documentation to determine your
@@ -152,7 +152,7 @@ export default async function GrantDetailPage({
           <h3 className="text-base font-semibold text-slate-950">
             Extracted Key Requirements
           </h3>
-          <ul className="grid list-inside list-disc grid-cols-1 gap-2 text-sm text-slate-700 md:grid-cols-2">
+          <ul className="grid list-inside list-disc grid-cols-1 gap-2 text-base text-slate-700 md:grid-cols-2">
             {keyRequirements.map((requirement, index) => (
               <li key={`${requirement.category}-${index}`}>
                 {requirement.value}
