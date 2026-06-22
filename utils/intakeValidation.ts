@@ -1,8 +1,22 @@
 export function validateIntakeQueue(
-  _opportunityName: string | null | undefined,
-  _queuedItems: unknown[] | null | undefined,
+  opportunityName: string | null | undefined,
+  queuedItems: unknown[] | null | undefined,
 ) {
+  if (!opportunityName?.trim()) {
+    return {
+      isValid: false,
+      error: "Name the grant opportunity before analyzing.",
+    };
+  }
+
+  if (!queuedItems?.length) {
+    return {
+      isValid: false,
+      error: "Add at least one document or pasted text source before analyzing.",
+    };
+  }
+
   return {
-    isValid: false,
+    isValid: true,
   };
 }
