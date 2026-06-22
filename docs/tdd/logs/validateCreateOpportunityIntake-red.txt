@@ -1,0 +1,119 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/validateCreateOpportunityIntake.test.ts (4 tests | 4 failed) 5ms
+     × passes for a named opportunity with supported evidence 3ms
+     × requires an opportunity name and at least one evidence item 1ms
+     × rejects unsupported files, too many files, and oversized files 0ms
+     × rejects pasted text limit violations and aggregate OpenAI overflow 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/validateCreateOpportunityIntake.test.ts > validateCreateOpportunityIntake > passes for a named opportunity with supported evidence
+AssertionError: expected { isValid: true, normalizedName: '' } to deeply equal { isValid: true, …(1) }
+
+- Expected
++ Received
+
+  {
+    "isValid": true,
+-   "normalizedName": "CA Dream Fund",
++   "normalizedName": "",
+  }
+
+ ❯ utils/validateCreateOpportunityIntake.test.ts:24:20
+     22|     });
+     23|
+     24|     expect(result).toEqual({
+       |                    ^
+     25|       isValid: true,
+     26|       normalizedName: "CA Dream Fund",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  utils/validateCreateOpportunityIntake.test.ts > validateCreateOpportunityIntake > requires an opportunity name and at least one evidence item
+AssertionError: expected { isValid: true, normalizedName: '' } to deeply equal { isValid: false, errors: [ …(2) ] }
+
+- Expected
++ Received
+
+  {
+-   "errors": [
+-     "Opportunity name is required.",
+-     "Add at least one file or pasted text snippet.",
+-   ],
+-   "isValid": false,
++   "isValid": true,
++   "normalizedName": "",
+  }
+
+ ❯ utils/validateCreateOpportunityIntake.test.ts:38:7
+     36|         aggregateTextChars: 0,
+     37|       }),
+     38|     ).toEqual({
+       |       ^
+     39|       isValid: false,
+     40|       errors: [
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  utils/validateCreateOpportunityIntake.test.ts > validateCreateOpportunityIntake > rejects unsupported files, too many files, and oversized files
+AssertionError: expected { isValid: true, normalizedName: '' } to deeply equal { isValid: false, errors: [ …(3) ] }
+
+- Expected
++ Received
+
+  {
+-   "errors": [
+-     "Upload no more than 10 files.",
+-     "File exceeds the 20MB limit: oversized.mov.",
+-     "Unsupported file type: oversized.mov.",
+-   ],
+-   "isValid": false,
++   "isValid": true,
++   "normalizedName": "",
+  }
+
+ ❯ utils/validateCreateOpportunityIntake.test.ts:66:20
+     64|     });
+     65|
+     66|     expect(result).toEqual({
+       |                    ^
+     67|       isValid: false,
+     68|       errors: [
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  utils/validateCreateOpportunityIntake.test.ts > validateCreateOpportunityIntake > rejects pasted text limit violations and aggregate OpenAI overflow
+AssertionError: expected { isValid: true, normalizedName: '' } to deeply equal { isValid: false, errors: [ …(3) ] }
+
+- Expected
++ Received
+
+  {
+-   "errors": [
+-     "Add no more than 10 pasted text snippets.",
+-     "Pasted text snippet exceeds the 40,000 character limit.",
+-     "Combined evidence exceeds the 180,000 character analysis limit.",
+-   ],
+-   "isValid": false,
++   "isValid": true,
++   "normalizedName": "",
+  }
+
+ ❯ utils/validateCreateOpportunityIntake.test.ts:87:20
+     85|     });
+     86|
+     87|     expect(result).toEqual({
+       |                    ^
+     88|       isValid: false,
+     89|       errors: [
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  01:20:57
+   Duration  125ms (transform 11ms, setup 0ms, import 17ms, tests 5ms, environment 0ms)
+
