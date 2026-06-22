@@ -1,3 +1,3 @@
 export function buildAggregatedPrompt(_documents: string[]) {
-  return "";
+  return _documents.join("\n\n--- NEXT DOCUMENT ---\n\n");
 }
