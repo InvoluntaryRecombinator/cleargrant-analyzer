@@ -12,7 +12,7 @@ describe("buildInitialExtractionPrompt", () => {
     });
 
     expect(prompt.systemPrompt).toContain(
-      "You extract explicit grant requirements from multiple evidence sources describing one grant opportunity.",
+      "You extract explicit grant requirements from one or more evidence sources describing one grant opportunity.",
     );
     expect(prompt.systemPrompt).toContain("sourceName");
     expect(prompt.systemPrompt).toContain("sourceQuote");

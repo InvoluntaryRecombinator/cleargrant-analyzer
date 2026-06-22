@@ -3,7 +3,10 @@ import "server-only";
 import OpenAI from "openai";
 
 import { getRequiredEnv } from "@/lib/env";
-import { buildInitialExtractionPrompt } from "@/utils/buildInitialExtractionPrompt";
+import {
+  buildInitialExtractionPrompt,
+  grantExtractionSystemRules,
+} from "@/utils/buildInitialExtractionPrompt";
 import type {
   ExtractedGrant,
   ExtractedRequirementCategory,
@@ -97,21 +100,6 @@ function extractionPrompt(fileName: string, text: string) {
   return `Source heading: ${fileName}
 
 Extract grant eligibility and compliance requirements from the evidence text below.
-
-Rules:
-- Extract only requirements explicitly stated in the evidence.
-- Do not infer missing requirements.
-- Do not create booleans or checklist defaults.
-- If a requirement category is absent, omit it from requirements.
-- Every requirement must include sourceName copied exactly from the source heading.
-- Every requirement must include a short exact sourceQuote from the same source text.
-- normalizedValues should contain lowercase comparable values only when directly supported by the source text.
-- Use an empty normalizedValues array when the requirement is explicit but not safe to normalize.
-- Fill metadata.awardText with explicit award amounts or ranges when source text states them.
-- Repeat award amount text as a funding_constraint requirement only when it is also an eligibility or funding rule.
-- Use empty strings for missing metadata fields.
-- If sources conflict, write a clear extractionNotes item citing both source names instead of silently choosing one.
-- Do not claim official eligibility.
 
 Evidence text:
 --- SOURCE 1: ${fileName} ---
@@ -216,8 +204,7 @@ export async function extractGrantRequirements({
   text: string;
 }) {
   return requestStructuredExtraction({
-    systemPrompt:
-      "You extract explicit grant evidence requirements into a strict JSON requirement-array schema with source provenance.",
+    systemPrompt: grantExtractionSystemRules.join(" "),
     userPrompt: extractionPrompt(fileName, text),
   });
 }
