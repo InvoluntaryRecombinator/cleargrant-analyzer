@@ -1,0 +1,73 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/extractReadableEvidence.test.ts (2 tests | 2 failed) 5ms
+     × returns readable evidence ordered by sourceOrder 4ms
+     × moves failed and blank evidence into warning metadata 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/extractReadableEvidence.test.ts > extractReadableEvidence > returns readable evidence ordered by sourceOrder
+AssertionError: expected [] to deeply equal [ …(2) ]
+
+- Expected
++ Received
+
+- [
+-   {
+-     "sourceName": "first.pdf",
+-     "sourceOrder": 1,
+-     "text": "First source text.",
+-   },
+-   {
+-     "sourceName": "second.pdf",
+-     "sourceOrder": 2,
+-     "text": "Second source text.",
+-   },
+- ]
++ []
+
+ ❯ utils/extractReadableEvidence.test.ts:22:37
+     20|     ]);
+     21|
+     22|     expect(result.readableEvidence).toEqual([
+       |                                     ^
+     23|       {
+     24|         sourceName: "first.pdf",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  utils/extractReadableEvidence.test.ts > extractReadableEvidence > moves failed and blank evidence into warning metadata
+AssertionError: expected [] to deeply equal [ { …(2) }, { …(2) } ]
+
+- Expected
++ Received
+
+- [
+-   {
+-     "reason": "PDF text extraction failed.",
+-     "sourceName": "corrupt.pdf",
+-   },
+-   {
+-     "reason": "Document unreadable or unsupported.",
+-     "sourceName": "image-scan.pdf",
+-   },
+- ]
++ []
+
+ ❯ utils/extractReadableEvidence.test.ts:55:35
+     53|
+     54|     expect(result.readableEvidence).toEqual([]);
+     55|     expect(result.failedEvidence).toEqual([
+       |                                   ^
+     56|       {
+     57|         sourceName: "corrupt.pdf",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  01:22:35
+   Duration  116ms (transform 12ms, setup 0ms, import 19ms, tests 5ms, environment 0ms)
+
