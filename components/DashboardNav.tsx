@@ -1,6 +1,6 @@
 "use client";
 
-import { Table2, UploadCloud, UserRound } from "lucide-react";
+import { Settings, Table2, UploadCloud, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -19,6 +19,11 @@ const navItems = [
     href: "/profile",
     label: "Profile",
     icon: UserRound,
+  },
+  {
+    href: "/settings",
+    label: "Settings",
+    icon: Settings,
   },
 ];
 
