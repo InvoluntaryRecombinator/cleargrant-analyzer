@@ -20,4 +20,24 @@ describe("buildAggregatedPrompt", () => {
       "Only document text.",
     );
   });
+
+  it("filters out empty and invalid document values before joining", () => {
+    expect(
+      buildAggregatedPrompt([
+        "Uploaded PDF text.",
+        "",
+        null,
+        "   ",
+        undefined,
+        42,
+        "Pasted text.",
+      ]),
+    ).toBe("Uploaded PDF text.\n\n--- NEXT DOCUMENT ---\n\nPasted text.");
+  });
+
+  it("returns an empty string when no valid document text is present", () => {
+    expect(buildAggregatedPrompt([])).toBe("");
+    expect(buildAggregatedPrompt(null)).toBe("");
+    expect(buildAggregatedPrompt(undefined)).toBe("");
+  });
 });

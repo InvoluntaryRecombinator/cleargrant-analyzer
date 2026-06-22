@@ -1,59 +1,69 @@
 
  RUN  v4.1.9 /Users/jw/cleargrant-analyzer
 
- ❯ utils/buildAggregatedPrompt.test.ts (2 tests | 2 failed) 3ms
-     × joins multiple document texts with the document separator 3ms
-     × returns a single document unchanged 0ms
+ ❯ utils/buildAggregatedPrompt.test.ts (4 tests | 2 failed) 4ms
+     × filters out empty and invalid document values before joining 2ms
+     × returns an empty string when no valid document text is present 0ms
 
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
 
- FAIL  utils/buildAggregatedPrompt.test.ts > buildAggregatedPrompt > joins multiple document texts with the document separator
-AssertionError: expected '' to be 'First document text.\n\n--- NEXT DOCU…' // Object.is equality
+ FAIL  utils/buildAggregatedPrompt.test.ts > buildAggregatedPrompt > filters out empty and invalid document values before joining
+AssertionError: expected 'Uploaded PDF text.\n\n--- NEXT DOCUME…' to be 'Uploaded PDF text.\n\n--- NEXT DOCUME…' // Object.is equality
 
 - Expected
 + Received
 
-- First document text.
--
-- --- NEXT DOCUMENT ---
--
-- Second document text.
--
-- --- NEXT DOCUMENT ---
--
-- Third document text.
+  Uploaded PDF text.
 
- ❯ utils/buildAggregatedPrompt.test.ts:13:7
-     11|         "Third document text.",
-     12|       ]),
-     13|     ).toBe(
+  --- NEXT DOCUMENT ---
+
++
++
++ --- NEXT DOCUMENT ---
++
++
++
++ --- NEXT DOCUMENT ---
++
++    
++
++ --- NEXT DOCUMENT ---
++
++
++
++ --- NEXT DOCUMENT ---
++
++ 42
++
++ --- NEXT DOCUMENT ---
++
+  Pasted text.
+
+ ❯ utils/buildAggregatedPrompt.test.ts:35:7
+     33|         "Pasted text.",
+     34|       ]),
+     35|     ).toBe("Uploaded PDF text.\n\n--- NEXT DOCUMENT ---\n\nPasted text…
        |       ^
-     14|       "First document text.\n\n--- NEXT DOCUMENT ---\n\nSecond documen…
-     15|     );
+     36|   });
+     37|
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
 
- FAIL  utils/buildAggregatedPrompt.test.ts > buildAggregatedPrompt > returns a single document unchanged
-AssertionError: expected '' to be 'Only document text.' // Object.is equality
-
-- Expected
-+ Received
-
-- Only document text.
-
- ❯ utils/buildAggregatedPrompt.test.ts:19:60
-     17|
-     18|   it("returns a single document unchanged", () => {
-     19|     expect(buildAggregatedPrompt(["Only document text."])).toBe(
-       |                                                            ^
-     20|       "Only document text.",
-     21|     );
+ FAIL  utils/buildAggregatedPrompt.test.ts > buildAggregatedPrompt > returns an empty string when no valid document text is present
+TypeError: Cannot read properties of null (reading 'join')
+ ❯ buildAggregatedPrompt utils/buildAggregatedPrompt.ts:2:21
+      1| export function buildAggregatedPrompt(_documents: string[]) {
+      2|   return _documents.join("\n\n--- NEXT DOCUMENT ---\n\n");
+       |                     ^
+      3| }
+      4|
+ ❯ utils/buildAggregatedPrompt.test.ts:40:12
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
 
 
  Test Files  1 failed (1)
-      Tests  2 failed (2)
-   Start at  22:59:40
-   Duration  120ms (transform 11ms, setup 0ms, import 17ms, tests 3ms, environment 0ms)
+      Tests  2 failed | 2 passed (4)
+   Start at  23:07:35
+   Duration  130ms (transform 11ms, setup 0ms, import 16ms, tests 4ms, environment 0ms)
 
