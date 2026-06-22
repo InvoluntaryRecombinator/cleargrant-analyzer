@@ -22,10 +22,13 @@ import {
   validateCreateOpportunityIntake,
   type CreateOpportunityFileInput,
 } from "@/utils/validateCreateOpportunityIntake";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
 const storageBucket = "grant-evidence";
+
+type StorageClient = Pick<Awaited<ReturnType<typeof createClient>>, "storage">;
 
 type StoredEvidenceDocument = {
   id: string;
@@ -120,7 +123,7 @@ function toMatchProfile(
 }
 
 async function cleanupStoredFiles(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: StorageClient,
   paths: string[],
 ) {
   if (paths.length === 0) {
@@ -228,9 +231,17 @@ export async function POST(request: Request) {
   }
 
   const grantId = randomUUID();
+  const adminSupabase = createAdminClient();
+  const storageSupabase: StorageClient = adminSupabase ?? supabase;
   const uploadedPaths: string[] = [];
   const storedDocuments: StoredEvidenceDocument[] = [];
   const deterministicNotes: string[] = [];
+
+  if (!adminSupabase && files.length > 0) {
+    console.warn(
+      "SUPABASE_SERVICE_ROLE_KEY is not configured; using the authenticated Supabase client for evidence storage. Private buckets require matching Storage RLS policies.",
+    );
+  }
 
   try {
     for (const [index, file] of files.entries()) {
@@ -240,20 +251,37 @@ export async function POST(request: Request) {
       const storagePath = `${user.id}/${grantId}/${documentId}/${safeStorageFileName(
         file.name,
       )}`;
-      const upload = await supabase.storage.from(storageBucket).upload(
-        storagePath,
-        file,
-        {
-          contentType: file.type || "application/octet-stream",
-          upsert: false,
-        },
-      );
+      let storedFilePath: string | null = storagePath;
 
-      if (upload.error) {
-        throw new Error(`Supabase storage upload failed: ${upload.error.message}`);
+      try {
+        const fileBytes = new Uint8Array(await file.arrayBuffer());
+        const upload = await storageSupabase.storage.from(storageBucket).upload(
+          storagePath,
+          fileBytes,
+          {
+            contentType: file.type || "application/octet-stream",
+            upsert: false,
+          },
+        );
+
+        if (upload.error) {
+          throw new Error(upload.error.message);
+        }
+
+        uploadedPaths.push(storagePath);
+      } catch (error) {
+        storedFilePath = null;
+        deterministicNotes.push(
+          `Original file was not saved to private storage: ${displayName}.`,
+        );
+        console.error("Supabase evidence storage upload failed", {
+          bucket: storageBucket,
+          path: storagePath,
+          fileName: file.name,
+          userId: user.id,
+          error,
+        });
       }
-
-      uploadedPaths.push(storagePath);
 
       try {
         const extracted = await extractTextFromFile(file);
@@ -263,7 +291,7 @@ export async function POST(request: Request) {
           fileName: file.name,
           displayName,
           fileType: extracted.fileType,
-          fileUrl: storagePath,
+          fileUrl: storedFilePath,
           sourceKind: "file",
           sourceUrl: null,
           sourceOrder,
@@ -278,7 +306,7 @@ export async function POST(request: Request) {
           fileName: file.name,
           displayName,
           fileType: file.type || "unknown",
-          fileUrl: storagePath,
+          fileUrl: storedFilePath,
           sourceKind: "file",
           sourceUrl: null,
           sourceOrder,
@@ -480,7 +508,7 @@ export async function POST(request: Request) {
         }
       });
     } catch (error) {
-      await cleanupStoredFiles(supabase, uploadedPaths);
+      await cleanupStoredFiles(storageSupabase, uploadedPaths);
       console.error("Grouped intake database transaction failed", error);
       return NextResponse.json(
         { error: "Unable to save the grant opportunity." },
@@ -499,7 +527,8 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    await cleanupStoredFiles(supabase, uploadedPaths);
+    await cleanupStoredFiles(storageSupabase, uploadedPaths);
+    console.error("Grouped intake request failed", error);
 
     return NextResponse.json(
       {

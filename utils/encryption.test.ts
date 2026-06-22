@@ -54,9 +54,10 @@ describe("api key encryption", () => {
 
   it("rejects tampered ciphertext", () => {
     const encrypted = encryptApiKey("sk-proj-test-secret");
-    const tampered = encrypted.encryptedText.replace(/.$/, (character) =>
-      character === "A" ? "B" : "A",
-    );
+    const [ciphertext, authTag] = encrypted.encryptedText.split(".");
+    const tamperedBytes = Buffer.from(ciphertext, "base64url");
+    tamperedBytes[0] = tamperedBytes[0] ^ 0xff;
+    const tampered = `${tamperedBytes.toString("base64url")}.${authTag}`;
 
     expect(() => decryptApiKey(tampered, encrypted.iv)).toThrow();
   });
