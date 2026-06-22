@@ -1,0 +1,30 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/buildInitialExtractionPrompt.test.ts (3 tests | 1 failed) 14ms
+     × defines strict UI-safe requirement value formatting rules 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/buildInitialExtractionPrompt.test.ts > buildInitialExtractionPrompt > defines strict UI-safe requirement value formatting rules
+AssertionError: expected 'You extract explicit grant requiremen…' to contain 'Extract for grant triage, matrix comp…'
+
+Expected: "Extract for grant triage, matrix comparison, and grant detail review."
+Received: "You extract explicit grant requirements from multiple evidence sources describing one grant opportunity. Return only facts directly supported by the source text. Do not infer missing requirements, create checklist defaults, or claim official eligibility. Every requirement must include sourceName copied exactly from its source heading. Every requirement must include sourceQuote copied exactly from the same source. Fill metadata.awardText with explicit award amounts or ranges when source text states them; repeat the same fact as a funding_constraint only when it is also an eligibility or funding rule. If two sources conflict, log the conflict in extractionNotes and cite both source names."
+
+ ❯ utils/buildInitialExtractionPrompt.test.ts:49:33
+     47|     });
+     48|
+     49|     expect(prompt.systemPrompt).toContain(
+       |                                 ^
+     50|       "Extract for grant triage, matrix comparison, and grant detail r…
+     51|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 13 passed (14)
+      Tests  1 failed | 57 passed (58)
+   Start at  03:18:45
+   Duration  366ms (transform 276ms, setup 0ms, import 453ms, tests 99ms, environment 1ms)
+
