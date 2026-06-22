@@ -26,6 +26,7 @@ export function buildInitialExtractionPrompt(
         "Do not infer missing requirements, create checklist defaults, or claim official eligibility.",
         "Every requirement must include sourceName copied exactly from its source heading.",
         "Every requirement must include sourceQuote copied exactly from the same source.",
+        "Fill metadata.awardText with explicit award amounts or ranges when source text states them; repeat the same fact as a funding_constraint only when it is also an eligibility or funding rule.",
         "If two sources conflict, log the conflict in extractionNotes and cite both source names.",
       ].join(" "),
     userPrompt: [

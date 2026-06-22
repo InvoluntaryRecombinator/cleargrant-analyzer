@@ -107,6 +107,8 @@ Rules:
 - Every requirement must include a short exact sourceQuote from the same source text.
 - normalizedValues should contain lowercase comparable values only when directly supported by the source text.
 - Use an empty normalizedValues array when the requirement is explicit but not safe to normalize.
+- Fill metadata.awardText with explicit award amounts or ranges when source text states them.
+- Repeat award amount text as a funding_constraint requirement only when it is also an eligibility or funding rule.
 - Use empty strings for missing metadata fields.
 - If sources conflict, write a clear extractionNotes item citing both source names instead of silently choosing one.
 - Do not claim official eligibility.
