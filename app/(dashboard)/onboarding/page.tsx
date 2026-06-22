@@ -12,7 +12,7 @@ export default async function OnboardingPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="profile-page">
       <section className="page-header">
         <div>
           <p className="eyebrow">Onboarding</p>
@@ -24,9 +24,7 @@ export default async function OnboardingPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
-        <ProfileForm mode="onboarding" profile={null} />
-      </section>
+      <ProfileForm mode="onboarding" profile={null} />
     </div>
   );
 }

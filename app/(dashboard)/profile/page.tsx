@@ -29,14 +29,14 @@ export default async function ProfilePage() {
   const formProfile = profile ? toProfileFormValues(profile) : null;
 
   return (
-    <div className="space-y-5">
-      <section className="rounded-lg border border-slate-300 bg-slate-100 px-5 py-4 shadow-sm">
+    <div className="profile-page">
+      <section className="profile-page-heading">
         <div>
           <p className="eyebrow">Applicant profile</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-normal text-slate-950">
+          <h1 className="profile-heading-title">
             {profile ? "Update applicant profile" : "Complete applicant profile"}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          <p className="profile-heading-description">
             ClearGrant uses this profile to check each grant opportunity
             against the applicant.
           </p>

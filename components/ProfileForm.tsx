@@ -87,14 +87,11 @@ const projectTypes = [
   "Emergency response",
 ];
 
-const labelClass = "block text-sm font-semibold leading-5 text-slate-700";
-const inputClass =
-  "w-full max-w-md rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15";
-const textareaClass =
-  "w-full max-w-2xl rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-6 text-slate-950 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15";
-const checkRowClass =
-  "flex min-h-9 items-center gap-x-2 rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-sm leading-5 text-slate-700 transition hover:border-teal-300 hover:bg-slate-50 has-[:checked]:border-teal-300 has-[:checked]:bg-teal-50/60 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-teal-600/15";
-const checkboxClass = "h-4 w-4 shrink-0 accent-teal-700";
+const labelClass = "form-label";
+const inputClass = "form-input profile-input";
+const compactInputClass = "form-input profile-input-sm";
+const textareaClass = "form-input profile-textarea";
+const checkRowClass = "check-row";
 
 function optionChecked(values: string[] | undefined, option: string) {
   return values?.includes(option) ?? false;
@@ -108,11 +105,9 @@ function SectionIntro({
   description: string;
 }) {
   return (
-    <div className="border-b border-stone-200 bg-stone-50 px-4 py-3 md:col-span-1">
-      <h2 className="text-base font-semibold text-slate-950">{title}</h2>
-      <p className="mt-1 max-w-xs text-sm leading-6 text-slate-500">
-        {description}
-      </p>
+    <div className="profile-section-intro">
+      <h2 className="section-heading">{title}</h2>
+      <p className="profile-section-description">{description}</p>
     </div>
   );
 }
@@ -129,18 +124,17 @@ function CheckboxGroup({
   values: string[] | undefined;
 }) {
   return (
-    <fieldset className="space-y-2">
-      <div className="flex items-center justify-between gap-3">
+    <fieldset className="profile-checkbox-group">
+      <div className="profile-checkbox-header">
         <legend className={labelClass}>{label}</legend>
-        <span className="text-xs font-semibold text-slate-500">
+        <span className="profile-selected-count">
           {values?.length ?? 0} selected
         </span>
       </div>
-      <div className="grid max-w-4xl grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
+      <div className="profile-checkbox-grid">
         {options.map((option) => (
           <label className={checkRowClass} key={option}>
             <input
-              className={checkboxClass}
               defaultChecked={optionChecked(values, option)}
               name={name}
               type="checkbox"
@@ -166,7 +160,6 @@ function CapacityCheckbox({
   return (
     <label className={checkRowClass}>
       <input
-        className={checkboxClass}
         defaultChecked={defaultChecked}
         name={name}
         type="checkbox"
@@ -190,12 +183,12 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
   return (
     <form
       action={formAction}
-      className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
+      className="profile-form form-panel"
     >
       <input name="redirectTo" type="hidden" value={redirectTo} />
 
       <section
-        className="grid grid-cols-1 gap-4 border-b border-gray-200 px-5 py-5 md:grid-cols-3 md:gap-8"
+        className="form-section profile-section"
         id="profile-applicant"
       >
         <SectionIntro
@@ -203,8 +196,8 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
           description="Basic legal and organization details used in each review."
         />
 
-        <div className="grid max-w-4xl gap-4 md:col-span-2 md:grid-cols-2">
-          <div className="space-y-2">
+        <div className="profile-section-content profile-field-grid profile-field-grid-two">
+          <div className="profile-field">
             <label className={labelClass} htmlFor="applicantType">
               Applicant type
             </label>
@@ -222,7 +215,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
           </div>
 
           {!isIndividual ? (
-            <div className="space-y-2">
+            <div className="profile-field">
               <label className={labelClass} htmlFor="organizationName">
                 Organization name
               </label>
@@ -235,14 +228,14 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
               />
             </div>
           ) : (
-            <div className="flex min-h-[4.25rem] max-w-md items-center rounded-md border border-gray-200 bg-slate-50 px-3 py-2 text-sm leading-6 text-slate-600">
+            <div className="profile-hidden-note">
               Organization fields are hidden for individual applicants.
             </div>
           )}
 
           {!isIndividual ? (
             <>
-              <div className="space-y-2">
+              <div className="profile-field">
                 <label className={labelClass} htmlFor="legalStatus">
                   Legal status
                 </label>
@@ -259,7 +252,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
                 </select>
               </div>
 
-              <div className="space-y-2">
+              <div className="profile-field">
                 <label className={labelClass} htmlFor="taxStatus">
                   Tax status
                 </label>
@@ -281,7 +274,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
       </section>
 
       <section
-        className="grid grid-cols-1 gap-4 border-b border-gray-200 px-5 py-5 md:grid-cols-3 md:gap-8"
+        className="form-section profile-section"
         id="profile-location"
       >
         <SectionIntro
@@ -289,14 +282,14 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
           description="Use the applicant's primary location. Project service areas can be handled separately later."
         />
 
-        <div className="space-y-4 md:col-span-2">
-          <div className="grid max-w-4xl gap-4 md:grid-cols-3">
-            <div className="space-y-2">
+        <div className="profile-section-content profile-stack">
+          <div className="profile-field-grid profile-field-grid-three">
+            <div className="profile-field">
               <label className={labelClass} htmlFor="country">
                 Country
               </label>
               <input
-                className="w-full max-w-sm rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15"
+                className={compactInputClass}
                 defaultValue={profile?.country ?? "United States"}
                 id="country"
                 name="country"
@@ -304,12 +297,12 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="profile-field">
               <label className={labelClass} htmlFor="state">
                 State
               </label>
               <input
-                className="w-full max-w-sm rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15"
+                className={compactInputClass}
                 defaultValue={profile?.state ?? ""}
                 id="state"
                 name="state"
@@ -317,12 +310,12 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="profile-field">
               <label className={labelClass} htmlFor="city">
                 City
               </label>
               <input
-                className="w-full max-w-sm rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15"
+                className={compactInputClass}
                 defaultValue={profile?.city ?? ""}
                 id="city"
                 name="city"
@@ -331,18 +324,18 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="profile-field">
             <label className={labelClass} htmlFor="missionStatement">
               Brief description of applicant work
             </label>
             <textarea
-              className={`${textareaClass} min-h-24 resize-y`}
+              className={textareaClass}
               defaultValue={profile?.missionStatement ?? ""}
               id="missionStatement"
               name="missionStatement"
               placeholder="Example: Provides after-school STEM programs for middle-school students in San Luis Obispo County."
             />
-            <p className="text-xs leading-5 text-slate-500">
+            <p className="profile-help">
               One or two sentences about the work this applicant does.
             </p>
           </div>
@@ -350,7 +343,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
       </section>
 
       <section
-        className="grid grid-cols-1 gap-4 border-b border-gray-200 px-5 py-5 md:grid-cols-3 md:gap-8"
+        className="form-section profile-section"
         id="profile-program"
       >
         <SectionIntro
@@ -358,7 +351,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
           description="Select the categories that commonly describe the applicant."
         />
 
-        <div className="grid gap-5 md:col-span-2">
+        <div className="profile-section-content profile-group-stack">
           <CheckboxGroup
             label="Focus areas"
             name="focusAreas"
@@ -383,7 +376,7 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
       </section>
 
       <section
-        className="grid grid-cols-1 gap-4 border-b border-gray-200 px-5 py-5 md:grid-cols-3 md:gap-8"
+        className="form-section profile-section"
         id="profile-registrations"
       >
         <SectionIntro
@@ -391,8 +384,8 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
           description="Common eligibility markers used during grant review."
         />
 
-        <div className="space-y-4 md:col-span-2">
-          <div className="grid max-w-4xl grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
+        <div className="profile-section-content profile-stack">
+          <div className="profile-checkbox-grid">
             <CapacityCheckbox
               defaultChecked={profile?.hasFiscalSponsor ?? false}
               label="Has fiscal sponsor"
@@ -420,12 +413,12 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
             />
           </div>
 
-          <div className="max-w-sm space-y-2">
+          <div className="profile-field profile-amount-field">
             <label className={labelClass} htmlFor="minimumUsefulAward">
               Minimum award amount to consider
             </label>
             <input
-              className="w-full max-w-sm rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15"
+              className={compactInputClass}
               defaultValue={profile?.minimumUsefulAward ?? ""}
               id="minimumUsefulAward"
               min={0}
@@ -441,20 +434,20 @@ export function ProfileForm({ profile, mode }: ProfileFormProps) {
         <p
           className={
             state.ok
-              ? "mx-5 mt-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900"
-              : "mx-5 mt-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+              ? "profile-notice notice notice-success"
+              : "profile-notice notice notice-warning"
           }
         >
           {state.message}
         </p>
       ) : null}
 
-      <div className="sticky bottom-0 z-20 flex items-center justify-between gap-4 border-t border-gray-200 bg-white/95 px-5 py-3 shadow-[0_-8px_18px_rgba(15,23,42,0.06)] backdrop-blur">
-        <p className="text-sm text-slate-600">
+      <div className="profile-savebar">
+        <p className="profile-save-note">
           Profile changes stay local until saved.
         </p>
         <button
-          className="inline-flex min-h-10 items-center justify-center rounded-md border border-teal-700 bg-teal-700 px-4 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="primary-button"
           disabled={pending}
           type="submit"
         >
