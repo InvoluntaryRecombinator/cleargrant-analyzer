@@ -11,6 +11,7 @@ import type {
   ExtractedGrant,
   ExtractedRequirementCategory,
 } from "@/utils/matchGrantToProfile";
+import { formatGrantDeadlineLabel } from "@/utils/parseGrantDeadline";
 
 function asExtractedGrant(value: unknown): ExtractedGrant | null {
   if (!value || typeof value !== "object") {
@@ -34,18 +35,6 @@ function firstRequirement(
 
 function countNeedsReview(value: unknown) {
   return Array.isArray(value) ? value.length : 0;
-}
-
-function formatDate(date: Date | null) {
-  if (!date) {
-    return "Not stated";
-  }
-
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
 }
 
 const extractionFailedText = "Extraction Failed: Document unreadable or unsupported.";
@@ -249,7 +238,10 @@ export default async function MatrixPage() {
                       </div>
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-xs leading-5 text-slate-700">
-                      {formatDate(grant.deadline)}
+                      {formatGrantDeadlineLabel(
+                        grant.deadline,
+                        extractedGrant?.metadata.deadline,
+                      )}
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-xs leading-5 text-slate-700">
                       <div className="max-h-16 overflow-hidden">

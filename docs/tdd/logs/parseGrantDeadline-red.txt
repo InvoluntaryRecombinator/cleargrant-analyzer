@@ -1,0 +1,87 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/parseGrantDeadline.test.ts (6 tests | 4 failed) 10ms
+     × parses natural-language grant deadlines with time and ET timezone text 4ms
+     × parses month-name, ISO, and slash date formats as calendar dates 0ms
+     × formats parsed dates with a compact calendar label 3ms
+     × uses raw extracted metadata when no parsed database date is available 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/parseGrantDeadline.test.ts > parseGrantDeadline > parses natural-language grant deadlines with time and ET timezone text
+AssertionError: expected undefined to be '2026-07-15T12:00:00.000Z' // Object.is equality
+
+- Expected:
+"2026-07-15T12:00:00.000Z"
+
++ Received:
+undefined
+
+ ❯ utils/parseGrantDeadline.test.ts:12:35
+     10|     const result = parseGrantDeadline("July 15, 2026, at 11:59 pm ET");
+     11|
+     12|     expect(result?.toISOString()).toBe("2026-07-15T12:00:00.000Z");
+       |                                   ^
+     13|   });
+     14|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  utils/parseGrantDeadline.test.ts > parseGrantDeadline > parses month-name, ISO, and slash date formats as calendar dates
+AssertionError: expected undefined to be '2026-06-01T12:00:00.000Z' // Object.is equality
+
+- Expected:
+"2026-06-01T12:00:00.000Z"
+
++ Received:
+undefined
+
+ ❯ utils/parseGrantDeadline.test.ts:16:73
+     14|
+     15|   it("parses month-name, ISO, and slash date formats as calendar dates…
+     16|     expect(parseGrantDeadline("Deadline: June 1, 2026")?.toISOString()…
+       |                                                                         ^
+     17|       "2026-06-01T12:00:00.000Z",
+     18|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  utils/parseGrantDeadline.test.ts > formatGrantDeadlineLabel > formats parsed dates with a compact calendar label
+AssertionError: expected 'Not stated' to be 'Jul 15, 2026' // Object.is equality
+
+Expected: "Jul 15, 2026"
+Received: "Not stated"
+
+ ❯ utils/parseGrantDeadline.test.ts:39:7
+     37|     expect(
+     38|       formatGrantDeadlineLabel(new Date("2026-07-15T12:00:00.000Z")),
+     39|     ).toBe("Jul 15, 2026");
+       |       ^
+     40|   });
+     41|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  utils/parseGrantDeadline.test.ts > formatGrantDeadlineLabel > uses raw extracted metadata when no parsed database date is available
+AssertionError: expected 'Not stated' to be 'July 15, 2026, at 11:59 pm ET' // Object.is equality
+
+Expected: "July 15, 2026, at 11:59 pm ET"
+Received: "Not stated"
+
+ ❯ utils/parseGrantDeadline.test.ts:45:7
+     43|     expect(
+     44|       formatGrantDeadlineLabel(null, "July 15, 2026, at 11:59 pm ET"),
+     45|     ).toBe("July 15, 2026, at 11:59 pm ET");
+       |       ^
+     46|   });
+     47|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed | 12 passed (13)
+      Tests  4 failed | 47 passed (51)
+   Start at  03:06:19
+   Duration  342ms (transform 271ms, setup 0ms, import 431ms, tests 41ms, environment 2ms)
+

@@ -9,6 +9,7 @@ import {
   matchGrantToProfile,
   type MatchProfile,
 } from "@/utils/matchGrantToProfile";
+import { parseGrantDeadline } from "@/utils/parseGrantDeadline";
 
 export const runtime = "nodejs";
 
@@ -17,15 +18,6 @@ const maxFileBytes = 20 * 1024 * 1024;
 
 function isUploadedFile(value: FormDataEntryValue): value is File {
   return value instanceof File && value.size > 0;
-}
-
-function parseDeadline(value: string | undefined) {
-  if (!value) {
-    return null;
-  }
-
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function toMatchProfile(
@@ -138,7 +130,7 @@ export async function POST(request: Request) {
       const matchResult = matchGrantToProfile(matchProfile, extractedGrant);
       const title = extractedGrant.metadata.grantTitle || file.name;
       const funder = extractedGrant.metadata.funderName || null;
-      const deadline = parseDeadline(extractedGrant.metadata.deadline);
+      const deadline = parseGrantDeadline(extractedGrant.metadata.deadline);
 
       await prisma.$transaction([
         prisma.extractionResult.create({

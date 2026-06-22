@@ -15,6 +15,7 @@ import {
   type MatchProfile,
 } from "@/utils/matchGrantToProfile";
 import { normalizePastedEvidence } from "@/utils/normalizePastedEvidence";
+import { parseGrantDeadline } from "@/utils/parseGrantDeadline";
 import {
   validateCreateOpportunityIntake,
   type CreateOpportunityFileInput,
@@ -64,15 +65,6 @@ function safeStorageFileName(fileName: string) {
       .replace(/[^a-zA-Z0-9._ -]+/g, "")
       .replace(/\s+/g, "-") || "evidence-file"
   );
-}
-
-function parseDeadline(value: string | undefined) {
-  if (!value) {
-    return null;
-  }
-
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function extractionErrorMessage(error: unknown) {
@@ -396,7 +388,7 @@ export async function POST(request: Request) {
         : null;
     const deadline =
       status === "analyzed"
-        ? parseDeadline(extractedGrant.metadata.deadline)
+        ? parseGrantDeadline(extractedGrant.metadata.deadline)
         : null;
     const inputSummary = {
       evidenceCount: storedDocuments.length,
