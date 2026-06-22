@@ -3,41 +3,8 @@ import { redirect } from "next/navigation";
 
 import { getProfileForUser, requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import {
-  matchStatusClassName,
-  readableGrantStatus,
-} from "@/utils/presentation";
-import type {
-  ExtractedGrant,
-  ExtractedRequirementCategory,
-} from "@/utils/matchGrantToProfile";
-import { formatGrantDeadlineLabel } from "@/utils/parseGrantDeadline";
-
-function asExtractedGrant(value: unknown): ExtractedGrant | null {
-  if (!value || typeof value !== "object") {
-    return null;
-  }
-
-  const candidate = value as Partial<ExtractedGrant>;
-  return Array.isArray(candidate.requirements) ? (candidate as ExtractedGrant) : null;
-}
-
-function firstRequirement(
-  extractedGrant: ExtractedGrant | null,
-  categories: ExtractedRequirementCategory[],
-) {
-  const requirement = extractedGrant?.requirements.find((item) =>
-    categories.includes(item.category),
-  );
-
-  return requirement?.value ?? "Not stated";
-}
-
-function countNeedsReview(value: unknown) {
-  return Array.isArray(value) ? value.length : 0;
-}
-
-const extractionFailedText = "Extraction Failed: Document unreadable or unsupported.";
+import { buildGrantMatrixRow } from "@/utils/buildGrantMatrixRow";
+import { matchStatusClassName } from "@/utils/presentation";
 
 export default async function MatrixPage() {
   const user = await requireUser();
@@ -167,114 +134,88 @@ export default async function MatrixPage() {
               ) : null}
 
               {grants.map((grant) => {
-                const extractedGrant = asExtractedGrant(
-                  grant.extractionResult?.extractedJson,
-                );
-                const locationRequirement = firstRequirement(extractedGrant, [
-                  "location",
-                ]);
-                const legalTaxRequirement = firstRequirement(extractedGrant, [
-                  "legal_status",
-                  "tax_status",
-                ]);
-                const hardRequirementCount =
-                  extractedGrant?.requirements.filter(
-                    (requirement) =>
-                      requirement.category !== "other_eligibility_note",
-                  ).length ?? 0;
-                const statusLabel = readableGrantStatus(
-                  grant.processingStatus,
-                  grant.matchResult?.matchLabel,
-                );
-                const primaryReason =
-                  grant.processingStatus === "failed"
-                    ? extractionFailedText
-                    : grant.matchResult?.primaryReason ??
-                      "Analysis is not complete.";
+                const row = buildGrantMatrixRow(grant);
 
                 return (
                   <tr
                     className="odd:bg-white even:bg-slate-50/50 hover:bg-teal-50/40"
-                    key={grant.id}
+                    key={row.id}
                   >
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top">
                       <Link
                         className="block truncate font-semibold text-slate-950 underline-offset-4 hover:text-teal-800 hover:underline"
-                        href={`/grants/${grant.id}`}
+                        href={`/grants/${row.id}`}
                       >
-                        {grant.title ?? grant.sourceFileName ?? "Untitled grant"}
+                        {row.titleLabel}
                       </Link>
                       <p className="mt-1 truncate text-xs text-slate-500">
-                        {grant.sourceFileName ?? "Uploaded document"}
+                        {row.sourceLabel}
                       </p>
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top">
                       <span
                         className={`inline-flex min-h-7 items-center justify-center rounded-full border px-2.5 py-1 text-xs font-bold leading-4 ${matchStatusClassName(
-                          statusLabel,
+                          row.statusLabel,
                         )}`}
                       >
-                        {statusLabel}
+                        {row.statusLabel}
                       </span>
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top">
                       <details className="group">
                         <summary className="cursor-pointer list-none">
                           <span className="block max-h-[4.25rem] overflow-hidden text-sm leading-5 text-slate-700">
-                            {primaryReason}
+                            {row.primaryReason}
                           </span>
                           <span className="mt-1 block text-xs font-bold text-teal-700 group-open:hidden">
                             Expand
                           </span>
                         </summary>
                         <p className="mt-2 border-l-2 border-teal-200 pl-3 text-sm leading-5 text-slate-700">
-                          {primaryReason}
+                          {row.primaryReason}
                         </p>
                       </details>
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top text-slate-700">
                       <div className="max-h-16 overflow-hidden leading-5">
-                        {grant.funder ?? "Not stated"}
+                        {row.funderLabel}
                       </div>
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-xs leading-5 text-slate-700">
-                      {formatGrantDeadlineLabel(
-                        grant.deadline,
-                        extractedGrant?.metadata.deadline,
-                      )}
+                      {row.deadlineLabel}
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-xs leading-5 text-slate-700">
                       <div className="max-h-16 overflow-hidden">
-                        {extractedGrant?.metadata.awardText || "Not stated"}
+                        {row.awardAmountLabel}
                       </div>
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top text-slate-700">
                       <div className="max-h-16 overflow-hidden leading-5">
-                        {firstRequirement(extractedGrant, ["applicant_type"])}
+                        {row.applicantRequirementLabel}
                       </div>
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top text-slate-700">
                       <div className="max-h-20 overflow-hidden leading-5">
                         <span className="font-semibold text-slate-900">Location:</span>{" "}
-                        {locationRequirement}
+                        {row.locationRequirementLabel}
                         <br />
                         <span className="font-semibold text-slate-900">Legal:</span>{" "}
-                        {legalTaxRequirement}
+                        {row.legalTaxRequirementLabel}
                       </div>
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-sm font-semibold text-slate-950">
-                      {hardRequirementCount}
+                      {row.hardRequirementCount}
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top font-mono text-sm font-semibold text-slate-950">
-                      {countNeedsReview(grant.matchResult?.needsReviewItems)}
+                      {row.needsReviewCount}
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top text-xs font-semibold uppercase leading-5 text-slate-600">
-                      {extractedGrant?.extractionConfidence ?? "Not available"}
+                      {row.extractionConfidenceLabel}
                     </td>
                     <td className="border-b border-slate-200/60 px-3 py-3 align-top">
                       <Link
                         className="inline-flex min-h-8 items-center justify-center rounded-md border border-stone-300 bg-white px-3 text-xs font-semibold text-slate-950 transition hover:bg-stone-50"
-                        href={`/grants/${grant.id}`}
+                        href={`/grants/${row.id}`}
                       >
                         Review
                       </Link>
