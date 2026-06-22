@@ -3,6 +3,7 @@ import "server-only";
 import OpenAI from "openai";
 
 import { getRequiredEnv } from "@/lib/env";
+import { buildInitialExtractionPrompt } from "@/utils/buildInitialExtractionPrompt";
 import type {
   ExtractedGrant,
   ExtractedRequirementCategory,
@@ -115,6 +116,51 @@ Evidence text:
 ${text}`;
 }
 
+async function requestStructuredExtraction({
+  systemPrompt,
+  userPrompt,
+}: {
+  systemPrompt: string;
+  userPrompt: string;
+}) {
+  const openai = new OpenAI({
+    apiKey: getRequiredEnv("OPENAI_API_KEY"),
+  });
+
+  const response = await openai.responses.create({
+    model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+    input: [
+      {
+        role: "system",
+        content: systemPrompt,
+      },
+      {
+        role: "user",
+        content: userPrompt,
+      },
+    ],
+    text: {
+      format: {
+        type: "json_schema",
+        name: "grant_requirement_array_extraction",
+        description:
+          "Explicit grant metadata and requirements extracted only from source text.",
+        strict: true,
+        schema: extractionSchema,
+      },
+    },
+  });
+
+  if (!response.output_text) {
+    throw new Error("OpenAI returned no structured output text.");
+  }
+
+  const parsed = JSON.parse(response.output_text) as unknown;
+  assertExtractedGrant(parsed);
+
+  return parsed;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -167,41 +213,27 @@ export async function extractGrantRequirements({
   fileName: string;
   text: string;
 }) {
-  const openai = new OpenAI({
-    apiKey: getRequiredEnv("OPENAI_API_KEY"),
+  return requestStructuredExtraction({
+    systemPrompt:
+      "You extract explicit grant evidence requirements into a strict JSON requirement-array schema with source provenance.",
+    userPrompt: extractionPrompt(fileName, text),
+  });
+}
+
+export async function extractGroupedGrantRequirements({
+  opportunityName,
+  sourceBlocks,
+  extractionNotes,
+}: {
+  opportunityName: string;
+  sourceBlocks: string;
+  extractionNotes?: string[];
+}) {
+  const prompt = buildInitialExtractionPrompt({
+    opportunityName,
+    sourceBlocks,
+    extractionNotes,
   });
 
-  const response = await openai.responses.create({
-    model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-    input: [
-      {
-        role: "system",
-        content:
-          "You extract explicit grant evidence requirements into a strict JSON requirement-array schema with source provenance.",
-      },
-      {
-        role: "user",
-        content: extractionPrompt(fileName, text),
-      },
-    ],
-    text: {
-      format: {
-        type: "json_schema",
-        name: "grant_requirement_array_extraction",
-        description:
-          "Explicit grant metadata and requirements extracted only from source text.",
-        strict: true,
-        schema: extractionSchema,
-      },
-    },
-  });
-
-  if (!response.output_text) {
-    throw new Error("OpenAI returned no structured output text.");
-  }
-
-  const parsed = JSON.parse(response.output_text) as unknown;
-  assertExtractedGrant(parsed);
-
-  return parsed;
+  return requestStructuredExtraction(prompt);
 }
