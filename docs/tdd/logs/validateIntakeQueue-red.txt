@@ -1,145 +1,128 @@
 
  RUN  v4.1.9 /Users/jw/cleargrant-analyzer
 
- ❯ utils/intakeValidation.test.ts (6 tests | 6 failed) 5ms
-     × passes when the opportunity has a name and at least one evidence item 3ms
-     × fails when the opportunity name is empty or whitespace 0ms
-     × fails when the opportunity name is missing 0ms
+ ❯ utils/intakeValidation.test.ts (7 tests | 5 failed) 7ms
+     × fails when the opportunity name is empty or whitespace 3ms
+     × fails when the opportunity name is missing 1ms
      × fails when no evidence items are queued 0ms
      × fails when the queue is missing 0ms
      × prioritizes the missing opportunity name over missing evidence 0ms
 
-⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
-
- FAIL  utils/intakeValidation.test.ts > validateIntakeQueue > passes when the opportunity has a name and at least one evidence item
-AssertionError: expected { isValid: false } to deeply equal { isValid: true }
-
-- Expected
-+ Received
-
-  {
--   "isValid": true,
-+   "isValid": false,
-  }
-
- ❯ utils/intakeValidation.test.ts:7:72
-      5| describe("validateIntakeQueue", () => {
-      6|   it("passes when the opportunity has a name and at least one evidence…
-      7|     expect(validateIntakeQueue("CA Tech Grant", [{ id: "source-1" }]))…
-       |                                                                        ^
-      8|       isValid: true,
-      9|     });
-
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
 
  FAIL  utils/intakeValidation.test.ts > validateIntakeQueue > fails when the opportunity name is empty or whitespace
-AssertionError: expected { isValid: false } to deeply equal { isValid: false, …(1) }
+AssertionError: expected { isValid: false, …(1) } to deeply equal { isValid: false, …(1) }
 
 - Expected
 + Received
 
   {
--   "error": "Name the grant opportunity before analyzing.",
+-   "error": "Name required.",
++   "error": "Name the grant opportunity before analyzing.",
     "isValid": false,
   }
 
- ❯ utils/intakeValidation.test.ts:13:59
-     11|
-     12|   it("fails when the opportunity name is empty or whitespace", () => {
-     13|     expect(validateIntakeQueue("", [{ id: "source-1" }])).toEqual({
+ ❯ utils/intakeValidation.test.ts:21:59
+     19|
+     20|   it("fails when the opportunity name is empty or whitespace", () => {
+     21|     expect(validateIntakeQueue("", [{ id: "source-1" }])).toEqual({
        |                                                           ^
-     14|       isValid: false,
-     15|       error: "Name the grant opportunity before analyzing.",
+     22|       isValid: false,
+     23|       error: "Name required.",
 
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
 
  FAIL  utils/intakeValidation.test.ts > validateIntakeQueue > fails when the opportunity name is missing
-AssertionError: expected { isValid: false } to deeply equal { isValid: false, …(1) }
+AssertionError: expected { isValid: false, …(1) } to deeply equal { isValid: false, …(1) }
 
 - Expected
 + Received
 
   {
--   "error": "Name the grant opportunity before analyzing.",
+-   "error": "Name required.",
++   "error": "Name the grant opportunity before analyzing.",
     "isValid": false,
   }
 
- ❯ utils/intakeValidation.test.ts:25:61
-     23|
-     24|   it("fails when the opportunity name is missing", () => {
-     25|     expect(validateIntakeQueue(null, [{ id: "source-1" }])).toEqual({
+ ❯ utils/intakeValidation.test.ts:33:61
+     31|
+     32|   it("fails when the opportunity name is missing", () => {
+     33|     expect(validateIntakeQueue(null, [{ id: "source-1" }])).toEqual({
        |                                                             ^
-     26|       isValid: false,
-     27|       error: "Name the grant opportunity before analyzing.",
+     34|       isValid: false,
+     35|       error: "Name required.",
 
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
 
  FAIL  utils/intakeValidation.test.ts > validateIntakeQueue > fails when no evidence items are queued
-AssertionError: expected { isValid: false } to deeply equal { isValid: false, …(1) }
+AssertionError: expected { isValid: false, …(1) } to deeply equal { isValid: false, …(1) }
 
 - Expected
 + Received
 
   {
--   "error": "Add at least one document or pasted text source before analyzing.",
+-   "error": "Add a document or pasted text.",
++   "error": "Add at least one document or pasted text source before analyzing.",
     "isValid": false,
   }
 
- ❯ utils/intakeValidation.test.ts:37:54
-     35|
-     36|   it("fails when no evidence items are queued", () => {
-     37|     expect(validateIntakeQueue("CA Tech Grant", [])).toEqual({
+ ❯ utils/intakeValidation.test.ts:45:54
+     43|
+     44|   it("fails when no evidence items are queued", () => {
+     45|     expect(validateIntakeQueue("CA Tech Grant", [])).toEqual({
        |                                                      ^
-     38|       isValid: false,
-     39|       error: "Add at least one document or pasted text source before a…
+     46|       isValid: false,
+     47|       error: "Add a document or pasted text.",
 
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
 
  FAIL  utils/intakeValidation.test.ts > validateIntakeQueue > fails when the queue is missing
-AssertionError: expected { isValid: false } to deeply equal { isValid: false, …(1) }
+AssertionError: expected { isValid: false, …(1) } to deeply equal { isValid: false, …(1) }
 
 - Expected
 + Received
 
   {
--   "error": "Add at least one document or pasted text source before analyzing.",
+-   "error": "Add a document or pasted text.",
++   "error": "Add at least one document or pasted text source before analyzing.",
     "isValid": false,
   }
 
- ❯ utils/intakeValidation.test.ts:44:56
-     42|
-     43|   it("fails when the queue is missing", () => {
-     44|     expect(validateIntakeQueue("CA Tech Grant", null)).toEqual({
+ ❯ utils/intakeValidation.test.ts:52:56
+     50|
+     51|   it("fails when the queue is missing", () => {
+     52|     expect(validateIntakeQueue("CA Tech Grant", null)).toEqual({
        |                                                        ^
-     45|       isValid: false,
-     46|       error: "Add at least one document or pasted text source before a…
+     53|       isValid: false,
+     54|       error: "Add a document or pasted text.",
 
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
 
  FAIL  utils/intakeValidation.test.ts > validateIntakeQueue > prioritizes the missing opportunity name over missing evidence
-AssertionError: expected { isValid: false } to deeply equal { isValid: false, …(1) }
+AssertionError: expected { isValid: false, …(1) } to deeply equal { isValid: false, …(1) }
 
 - Expected
 + Received
 
   {
--   "error": "Name the grant opportunity before analyzing.",
+-   "error": "Name required.",
++   "error": "Name the grant opportunity before analyzing.",
     "isValid": false,
   }
 
- ❯ utils/intakeValidation.test.ts:56:41
-     54|
-     55|   it("prioritizes the missing opportunity name over missing evidence",…
-     56|     expect(validateIntakeQueue("", [])).toEqual({
+ ❯ utils/intakeValidation.test.ts:64:41
+     62|
+     63|   it("prioritizes the missing opportunity name over missing evidence",…
+     64|     expect(validateIntakeQueue("", [])).toEqual({
        |                                         ^
-     57|       isValid: false,
-     58|       error: "Name the grant opportunity before analyzing.",
+     65|       isValid: false,
+     66|       error: "Name required.",
 
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
 
 
  Test Files  1 failed (1)
-      Tests  6 failed (6)
-   Start at  23:34:49
-   Duration  116ms (transform 11ms, setup 0ms, import 16ms, tests 5ms, environment 0ms)
+      Tests  5 failed | 2 passed (7)
+   Start at  23:46:02
+   Duration  134ms (transform 12ms, setup 0ms, import 17ms, tests 7ms, environment 0ms)
 

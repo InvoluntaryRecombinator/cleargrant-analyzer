@@ -1,0 +1,9 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  23:46:17
+   Duration  108ms (transform 12ms, setup 0ms, import 17ms, tests 2ms, environment 0ms)
+

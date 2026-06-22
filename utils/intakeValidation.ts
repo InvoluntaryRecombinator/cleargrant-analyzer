@@ -1,3 +1,8 @@
+export const intakeValidationErrors = {
+  nameRequired: "Name required.",
+  evidenceRequired: "Add a document or pasted text.",
+} as const;
+
 export function validateIntakeQueue(
   opportunityName: string | null | undefined,
   queuedItems: unknown[] | null | undefined,
@@ -5,14 +10,14 @@ export function validateIntakeQueue(
   if (!opportunityName?.trim()) {
     return {
       isValid: false,
-      error: "Name the grant opportunity before analyzing.",
+      error: intakeValidationErrors.nameRequired,
     };
   }
 
   if (!queuedItems?.length) {
     return {
       isValid: false,
-      error: "Add at least one document or pasted text source before analyzing.",
+      error: intakeValidationErrors.evidenceRequired,
     };
   }
 
