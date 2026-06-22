@@ -71,7 +71,7 @@ export function GrantChatbot({ grant, onClose }: GrantChatbotProps) {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex h-[650px] max-h-[90vh] w-[500px] max-w-[90vw] resize flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-2xl">
+    <div className="fixed bottom-6 right-6 z-[100] flex h-[600px] w-[450px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
       <div className="flex items-center justify-between gap-3 border-b border-stone-200 bg-slate-100 px-4 py-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-slate-950">
@@ -89,7 +89,7 @@ export function GrantChatbot({ grant, onClose }: GrantChatbotProps) {
         </button>
       </div>
 
-      <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 px-4 py-4">
+      <div className="flex-1 space-y-6 overflow-y-auto p-5">
         {messages.length === 0 ? (
           <div className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm leading-6 text-slate-600">
             Ask about eligibility requirements, source quotes, deadlines, or
@@ -118,9 +118,13 @@ export function GrantChatbot({ grant, onClose }: GrantChatbotProps) {
                     : "border border-stone-200 bg-white text-slate-700"
                 }`}
               >
-                <div className="space-y-3 text-sm [&>h3]:mt-4 [&>h3]:font-semibold [&>p]:mb-3 [&>strong]:font-bold [&>ul]:list-disc [&>ul]:pl-5">
-                  <ReactMarkdown>{text}</ReactMarkdown>
-                </div>
+                {isUser ? (
+                  <span className="whitespace-pre-wrap">{text}</span>
+                ) : (
+                  <div className="space-y-3 text-sm leading-relaxed text-slate-800 [&>h3]:mt-4 [&>h3]:text-base [&>h3]:font-semibold [&>p]:mb-3 [&>strong]:font-bold [&>ul]:ml-5 [&>ul]:list-disc">
+                    <ReactMarkdown>{text}</ReactMarkdown>
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -141,17 +145,17 @@ export function GrantChatbot({ grant, onClose }: GrantChatbotProps) {
       </div>
 
       <form
-        className="flex items-center gap-2 border-t border-stone-200 bg-white p-3"
+        className="flex w-full shrink-0 gap-2 border-t border-slate-200 bg-slate-50 p-4"
         onSubmit={submitMessage}
       >
         <input
-          className="min-h-10 flex-1 rounded-md border border-stone-300 px-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15"
+          className="w-full flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
           onChange={(event) => setInput(event.target.value)}
           placeholder="Ask about this opportunity"
           value={input}
         />
         <button
-          className="inline-flex min-h-10 items-center justify-center rounded-md border border-teal-700 bg-teal-700 px-3 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-md border border-teal-700 bg-teal-700 px-3 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={!input.trim() || isBusy}
           type="submit"
         >

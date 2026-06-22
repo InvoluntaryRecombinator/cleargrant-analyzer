@@ -85,6 +85,7 @@ export default async function GrantDetailPage({
 
   const extractedGrant = asExtractedGrant(grant.extractionResult?.extractedJson);
   const groups = groupedRequirements(extractedGrant);
+  const keyRequirements = groups.flatMap(([, requirements]) => requirements);
   const extractionFailed = grant.processingStatus === "failed";
   const statusLabel = extractionFailed
     ? "Extraction Failed"
@@ -130,6 +131,34 @@ export default async function GrantDetailPage({
         <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Funder</p>
           <p className="metric-value">{grant.funder ?? "Not stated"}</p>
+        </div>
+      </section>
+
+      <section className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="space-y-2">
+          <h3 className="text-base font-semibold text-slate-950">
+            Opportunity Overview
+          </h3>
+          <p className="text-sm leading-6 text-slate-600">
+            This opportunity has been processed by the ClearGrant Analyzer. The
+            following baseline constraints and eligibility criteria were
+            extracted directly from the source documentation to determine your
+            match likelihood. Review the key requirements below before
+            proceeding with a full application.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-base font-semibold text-slate-950">
+            Extracted Key Requirements
+          </h3>
+          <ul className="grid list-inside list-disc grid-cols-1 gap-2 text-sm text-slate-700 md:grid-cols-2">
+            {keyRequirements.map((requirement, index) => (
+              <li key={`${requirement.category}-${index}`}>
+                {requirement.value}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
