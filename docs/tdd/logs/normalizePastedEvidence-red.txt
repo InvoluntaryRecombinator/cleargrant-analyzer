@@ -1,0 +1,87 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/normalizePastedEvidence.test.ts (3 tests | 3 failed) 5ms
+     × creates a virtual evidence row from pasted text 4ms
+     × uses a deterministic display name when the user leaves it blank 0ms
+     × truncates pasted text at the per-snippet character cap 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/normalizePastedEvidence.test.ts > normalizePastedEvidence > creates a virtual evidence row from pasted text
+AssertionError: expected { sourceKind: 'pasted_text', …(10) } to match object { sourceKind: 'pasted_text', …(9) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "displayName": "Website FAQ",
+-   "extractedText": "Eligibility rules from a grant webpage.",
++   "displayName": "",
++   "extractedText": "",
+    "extractionStatus": "completed",
+-   "fileName": "pasted-text-snippet-2.txt",
++   "fileName": "",
+    "fileType": "text/plain",
+    "fileUrl": null,
+    "sourceKind": "pasted_text",
+-   "sourceOrder": 3,
+-   "sourceUrl": "https://example.org/grants",
++   "sourceOrder": 0,
++   "sourceUrl": null,
+    "wasTruncated": false,
+  }
+
+ ❯ utils/normalizePastedEvidence.test.ts:15:22
+     13|     });
+     14|
+     15|     expect(evidence).toMatchObject({
+       |                      ^
+     16|       sourceKind: "pasted_text",
+     17|       fileName: "pasted-text-snippet-2.txt",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  utils/normalizePastedEvidence.test.ts > normalizePastedEvidence > uses a deterministic display name when the user leaves it blank
+AssertionError: expected '' to be 'Pasted Text Snippet 1' // Object.is equality
+
+- Expected
++ Received
+
+- Pasted Text Snippet 1
+
+ ❯ utils/normalizePastedEvidence.test.ts:37:34
+     35|     });
+     36|
+     37|     expect(evidence.displayName).toBe("Pasted Text Snippet 1");
+       |                                  ^
+     38|     expect(evidence.sourceUrl).toBeNull();
+     39|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  utils/normalizePastedEvidence.test.ts > normalizePastedEvidence > truncates pasted text at the per-snippet character cap
+AssertionError: expected '' to be 'abcdefghijkl' // Object.is equality
+
+- Expected
++ Received
+
+- abcdefghijkl
+
+ ❯ utils/normalizePastedEvidence.test.ts:51:36
+     49|     );
+     50|
+     51|     expect(evidence.extractedText).toBe("abcdefghijkl");
+       |                                    ^
+     52|     expect(evidence.fileSize).toBe(12);
+     53|     expect(evidence.wasTruncated).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  01:19:45
+   Duration  163ms (transform 12ms, setup 0ms, import 18ms, tests 5ms, environment 0ms)
+
