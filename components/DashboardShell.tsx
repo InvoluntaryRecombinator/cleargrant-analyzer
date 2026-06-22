@@ -33,7 +33,7 @@ export function DashboardShell({ children, email }: DashboardShellProps) {
             </span>
             <form action={logout}>
               <button
-                className="inline-flex min-h-9 items-center justify-center rounded-md border border-stone-300 bg-white px-3 text-sm font-semibold text-slate-950 transition hover:bg-stone-50"
+                className="inline-flex min-h-9 items-center justify-center rounded-md border border-slate-950 bg-teal-700 px-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-800"
                 type="submit"
               >
                 Logout

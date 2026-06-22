@@ -1,6 +1,7 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { ChevronDown, Flag } from "lucide-react";
 
+import { GrantDetailHeaderActions } from "@/components/GrantDetailHeaderActions";
 import { getProfileForUser, requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { matchStatusClassName } from "@/utils/presentation";
@@ -89,6 +90,19 @@ export default async function GrantDetailPage({
     ? "Extraction Failed"
     : grant.matchResult?.matchLabel ??
       (grant.processingStatus === "processing" ? "Processing" : "Uploaded");
+  const chatGrant = {
+    title: grant.title ?? grant.sourceFileName ?? "Untitled grant",
+    funder: grant.funder,
+    matchLabel: statusLabel,
+    primaryReason: grant.matchResult?.primaryReason ?? null,
+    extractedRequirements: extractedGrant,
+    sourceDocuments: grant.uploadedDocuments.map((document) => ({
+      displayName: document.displayName,
+      fileName: document.fileName,
+      sourceKind: document.sourceKind,
+      extractionStatus: document.extractionStatus,
+    })),
+  };
 
   return (
     <div className="space-y-8">
@@ -99,12 +113,10 @@ export default async function GrantDetailPage({
             {grant.title ?? grant.sourceFileName ?? "Untitled grant"}
           </h1>
         </div>
-        <Link className="secondary-button" href="/matrix">
-          Back to matrix
-        </Link>
+        <GrantDetailHeaderActions grant={chatGrant} />
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2">
         <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Match label</p>
           <span
@@ -118,14 +130,6 @@ export default async function GrantDetailPage({
         <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
           <p className="metric-label">Funder</p>
           <p className="metric-value">{grant.funder ?? "Not stated"}</p>
-        </div>
-        <div className="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
-          <p className="metric-label">Extraction</p>
-          <p className="metric-value">
-            {extractedGrant?.extractionConfidence ??
-              grant.extractionResult?.status ??
-              "Not available"}
-          </p>
         </div>
       </section>
 
@@ -173,7 +177,7 @@ export default async function GrantDetailPage({
               >
                 <div>
                   <p className="text-sm font-semibold leading-6 text-slate-950">
-                  {requirement.value}
+                    {requirement.value}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {(requirement.normalizedValues ?? []).map((value) => (
@@ -196,14 +200,21 @@ export default async function GrantDetailPage({
       ))}
 
       {!extractionFailed ? (
-        <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
-          <div className="border-b border-stone-200 bg-white px-4 py-3">
-            <h2 className="section-heading">Raw JSON</h2>
-          </div>
-          <pre className="overflow-x-auto bg-slate-950 px-4 py-3 font-mono text-xs leading-5 text-slate-100">
+        <details className="group overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-950">
+              <Flag aria-hidden="true" className="size-4 text-slate-500" />
+              Developer data
+            </span>
+            <ChevronDown
+              aria-hidden="true"
+              className="size-4 text-slate-500 transition group-open:rotate-180"
+            />
+          </summary>
+          <pre className="max-h-[32rem] overflow-auto border-t border-stone-200 bg-slate-950 px-4 py-3 font-mono text-xs leading-5 text-slate-100">
             {jsonString(grant.extractionResult?.extractedJson ?? {})}
           </pre>
-        </section>
+        </details>
       ) : null}
     </div>
   );
