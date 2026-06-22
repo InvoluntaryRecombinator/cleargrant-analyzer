@@ -1,0 +1,76 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/buildEvidenceSourceBlocks.test.ts (3 tests | 3 failed) 3ms
+     × wraps readable evidence in numbered source headings 3ms
+     × skips blank evidence without renumbering gaps 0ms
+     × truncates body text at the aggregate character cap and records the source 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/buildEvidenceSourceBlocks.test.ts > buildEvidenceSourceBlocks > wraps readable evidence in numbered source headings
+AssertionError: expected '' to be '--- SOURCE 1: guidelines.pdf ---\nEli…' // Object.is equality
+
+- Expected
++ Received
+
+- --- SOURCE 1: guidelines.pdf ---
+- Eligible applicants must be California nonprofits.
+-
+- --- SOURCE 2: Pasted website text ---
+- Applications are due May 1.
+
+ ❯ utils/buildEvidenceSourceBlocks.test.ts:18:31
+     16|     ]);
+     17|
+     18|     expect(result.promptText).toBe(
+       |                               ^
+     19|       [
+     20|         "--- SOURCE 1: guidelines.pdf ---",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  utils/buildEvidenceSourceBlocks.test.ts > buildEvidenceSourceBlocks > skips blank evidence without renumbering gaps
+AssertionError: expected '' to be '--- SOURCE 1: faq.pdf ---\nGrant awar…' // Object.is equality
+
+- Expected
++ Received
+
+- --- SOURCE 1: faq.pdf ---
+- Grant awards are up to $50,000.
+
+ ❯ utils/buildEvidenceSourceBlocks.test.ts:41:31
+     39|     ]);
+     40|
+     41|     expect(result.promptText).toBe(
+       |                               ^
+     42|       "--- SOURCE 1: faq.pdf ---\nGrant awards are up to $50,000.",
+     43|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  utils/buildEvidenceSourceBlocks.test.ts > buildEvidenceSourceBlocks > truncates body text at the aggregate character cap and records the source
+AssertionError: expected '' to be '--- SOURCE 1: long-guidelines.pdf ---…' // Object.is equality
+
+- Expected
++ Received
+
+- --- SOURCE 1: long-guidelines.pdf ---
+- abcdefghijkl
+
+ ❯ utils/buildEvidenceSourceBlocks.test.ts:61:31
+     59|     );
+     60|
+     61|     expect(result.promptText).toBe(
+       |                               ^
+     62|       "--- SOURCE 1: long-guidelines.pdf ---\nabcdefghijkl",
+     63|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  01:18:49
+   Duration  116ms (transform 10ms, setup 0ms, import 15ms, tests 3ms, environment 0ms)
+
