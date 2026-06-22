@@ -1,0 +1,51 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/buildInitialExtractionPrompt.test.ts (2 tests | 2 failed) 3ms
+     × builds system and user prompts for a new grouped opportunity 2ms
+     × includes conflict and failed-evidence instructions 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/buildInitialExtractionPrompt.test.ts > buildInitialExtractionPrompt > builds system and user prompts for a new grouped opportunity
+AssertionError: expected '' to contain 'You extract explicit grant requiremen…'
+
+- Expected
++ Received
+
+- You extract explicit grant requirements from multiple evidence sources describing one grant opportunity.
+
+ ❯ utils/buildInitialExtractionPrompt.test.ts:14:33
+     12|     });
+     13|
+     14|     expect(prompt.systemPrompt).toContain(
+       |                                 ^
+     15|       "You extract explicit grant requirements from multiple evidence …
+     16|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  utils/buildInitialExtractionPrompt.test.ts > buildInitialExtractionPrompt > includes conflict and failed-evidence instructions
+AssertionError: expected '' to contain 'If two sources conflict, log the conf…'
+
+- Expected
++ Received
+
+- If two sources conflict, log the conflict in extractionNotes and cite both source names.
+
+ ❯ utils/buildInitialExtractionPrompt.test.ts:32:33
+     30|     });
+     31|
+     32|     expect(prompt.systemPrompt).toContain(
+       |                                 ^
+     33|       "If two sources conflict, log the conflict in extractionNotes an…
+     34|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  01:23:15
+   Duration  111ms (transform 11ms, setup 0ms, import 17ms, tests 3ms, environment 0ms)
+
