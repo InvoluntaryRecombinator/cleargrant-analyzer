@@ -13,6 +13,7 @@ export type ExtractedRequirementCategory =
 export type ExtractedRequirement = {
   category: ExtractedRequirementCategory;
   value: string;
+  sourceName: string;
   sourceQuote: string;
   normalizedValues?: string[];
   confidence: "high" | "medium" | "low";
@@ -52,6 +53,7 @@ export type MatchReason = {
   category: ExtractedRequirementCategory;
   grantRequirement: string;
   profileValue?: string;
+  sourceName?: string;
   sourceQuote?: string;
 };
 
@@ -59,12 +61,14 @@ export type NeedsReviewItem = {
   category: ExtractedRequirementCategory;
   requirement: string;
   reason: string;
+  sourceName?: string;
   sourceQuote?: string;
 };
 
 export type PassedItem = {
   category: ExtractedRequirementCategory;
   reason: string;
+  sourceName?: string;
   sourceQuote?: string;
 };
 
@@ -233,6 +237,7 @@ export function matchGrantToProfile(
         requirement: requirement.value,
         reason:
           "The requirement is explicit, but it was not normalized enough for deterministic comparison.",
+        sourceName: requirement.sourceName,
         sourceQuote: requirement.sourceQuote,
       });
       continue;
@@ -244,6 +249,7 @@ export function matchGrantToProfile(
       passedItems.push({
         category: requirement.category,
         reason: passReason(requirement),
+        sourceName: requirement.sourceName,
         sourceQuote: requirement.sourceQuote,
       });
       continue;
@@ -253,6 +259,7 @@ export function matchGrantToProfile(
       category: requirement.category,
       grantRequirement: requirement.value,
       profileValue: profileValueText(profileValues),
+      sourceName: requirement.sourceName,
       sourceQuote: requirement.sourceQuote,
     });
   }

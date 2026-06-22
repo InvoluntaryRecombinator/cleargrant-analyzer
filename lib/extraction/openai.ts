@@ -47,6 +47,7 @@ const extractionSchema = {
         required: [
           "category",
           "value",
+          "sourceName",
           "sourceQuote",
           "normalizedValues",
           "confidence",
@@ -57,6 +58,9 @@ const extractionSchema = {
             enum: requirementCategories,
           },
           value: {
+            type: "string",
+          },
+          sourceName: {
             type: "string",
           },
           sourceQuote: {
@@ -89,22 +93,25 @@ const extractionSchema = {
 } as const;
 
 function extractionPrompt(fileName: string, text: string) {
-  return `Document filename: ${fileName}
+  return `Source heading: ${fileName}
 
-Extract grant eligibility and compliance requirements from the document text below.
+Extract grant eligibility and compliance requirements from the evidence text below.
 
 Rules:
-- Extract only requirements explicitly stated in the document.
+- Extract only requirements explicitly stated in the evidence.
 - Do not infer missing requirements.
 - Do not create booleans or checklist defaults.
 - If a requirement category is absent, omit it from requirements.
-- Every requirement must include a short exact sourceQuote from the text.
+- Every requirement must include sourceName copied exactly from the source heading.
+- Every requirement must include a short exact sourceQuote from the same source text.
 - normalizedValues should contain lowercase comparable values only when directly supported by the source text.
 - Use an empty normalizedValues array when the requirement is explicit but not safe to normalize.
 - Use empty strings for missing metadata fields.
+- If sources conflict, write a clear extractionNotes item citing both source names instead of silently choosing one.
 - Do not claim official eligibility.
 
-Document text:
+Evidence text:
+--- SOURCE 1: ${fileName} ---
 ${text}`;
 }
 
@@ -139,6 +146,7 @@ function assertExtractedGrant(value: unknown): asserts value is ExtractedGrant {
 
     if (
       typeof requirement.value !== "string" ||
+      typeof requirement.sourceName !== "string" ||
       typeof requirement.sourceQuote !== "string" ||
       !Array.isArray(requirement.normalizedValues) ||
       !["high", "medium", "low"].includes(String(requirement.confidence))
@@ -169,7 +177,7 @@ export async function extractGrantRequirements({
       {
         role: "system",
         content:
-          "You extract explicit grant document requirements into a strict JSON requirement-array schema.",
+          "You extract explicit grant evidence requirements into a strict JSON requirement-array schema with source provenance.",
       },
       {
         role: "user",

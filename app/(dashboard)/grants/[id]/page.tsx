@@ -67,7 +67,14 @@ export default async function GrantDetailPage({
     include: {
       extractionResult: true,
       matchResult: true,
-      uploadedDocument: true,
+      uploadedDocuments: {
+        where: {
+          isActive: true,
+        },
+        orderBy: {
+          sourceOrder: "asc",
+        },
+      },
     },
   });
 

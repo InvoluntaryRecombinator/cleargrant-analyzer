@@ -55,18 +55,21 @@ model Grant {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  title          String?
-  funder         String?
-  sourceFileName String?
-  fileType       String?
-  deadline       DateTime?
-  awardMin       Int?
-  awardMax       Int?
+  title            String?
+  funder           String?
+  sourceFileName   String?
+  fileType         String?
+  deadline         DateTime?
+  awardMin         Int?
+  awardMax         Int?
   processingStatus String @default("uploaded")
+  analysisVersion  Int    @default(1)
+  lastAnalyzedAt   DateTime?
 
-  uploadedDocument UploadedDocument?
-  extractionResult ExtractionResult?
-  matchResult      MatchResult?
+  uploadedDocuments  UploadedDocument[]
+  extractionResult    ExtractionResult?
+  extractionRevisions ExtractionRevision[]
+  matchResult         MatchResult?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,16 +79,44 @@ model Grant {
 
 model UploadedDocument {
   id      String @id @default(cuid())
-  grantId String @unique
+  grantId String
   grant   Grant  @relation(fields: [grantId], references: [id], onDelete: Cascade)
 
-  fileName      String
-  fileType      String
-  fileUrl       String?
-  extractedText String?
+  fileName         String
+  displayName      String?
+  fileType         String
+  fileUrl          String?
+  sourceKind       String  @default("file")
+  sourceUrl        String?
+  sourceOrder      Int     @default(0)
+  extractedText    String?
+  extractionStatus String  @default("completed")
+  extractionError  String?
+  contentHash      String?
+  fileSize         Int?
+  isActive         Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([grantId])
+  @@index([grantId, isActive])
+}
+
+model ExtractionRevision {
+  id      String @id @default(cuid())
+  grantId String
+  grant   Grant  @relation(fields: [grantId], references: [id], onDelete: Cascade)
+
+  revision      Int
+  reason        String
+  extractedJson Json
+  inputSummary  Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([grantId])
+  @@unique([grantId, revision])
 }
 
 model ExtractionResult {
