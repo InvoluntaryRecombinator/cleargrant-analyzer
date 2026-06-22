@@ -16,6 +16,7 @@ describe("buildInitialExtractionPrompt", () => {
     );
     expect(prompt.systemPrompt).toContain("sourceName");
     expect(prompt.systemPrompt).toContain("sourceQuote");
+    expect(prompt.systemPrompt).toContain("metadata.awardText");
     expect(prompt.userPrompt).toContain("Opportunity name: CA Dream Fund");
     expect(prompt.userPrompt).toContain("--- SOURCE 1: guidelines.pdf ---");
   });

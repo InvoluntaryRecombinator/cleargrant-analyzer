@@ -1,0 +1,30 @@
+
+ RUN  v4.1.9 /Users/jw/cleargrant-analyzer
+
+ ❯ utils/buildInitialExtractionPrompt.test.ts (2 tests | 1 failed) 9ms
+     × builds system and user prompts for a new grouped opportunity 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  utils/buildInitialExtractionPrompt.test.ts > buildInitialExtractionPrompt > builds system and user prompts for a new grouped opportunity
+AssertionError: expected 'You extract explicit grant requiremen…' to contain 'metadata.awardText'
+
+Expected: "metadata.awardText"
+Received: "You extract explicit grant requirements from multiple evidence sources describing one grant opportunity. Return only facts directly supported by the source text. Do not infer missing requirements, create checklist defaults, or claim official eligibility. Every requirement must include sourceName copied exactly from its source heading. Every requirement must include sourceQuote copied exactly from the same source. If two sources conflict, log the conflict in extractionNotes and cite both source names."
+
+ ❯ utils/buildInitialExtractionPrompt.test.ts:19:33
+     17|     expect(prompt.systemPrompt).toContain("sourceName");
+     18|     expect(prompt.systemPrompt).toContain("sourceQuote");
+     19|     expect(prompt.systemPrompt).toContain("metadata.awardText");
+       |                                 ^
+     20|     expect(prompt.userPrompt).toContain("Opportunity name: CA Dream Fu…
+     21|     expect(prompt.userPrompt).toContain("--- SOURCE 1: guidelines.pdf …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 13 passed (14)
+      Tests  1 failed | 56 passed (57)
+   Start at  03:12:50
+   Duration  365ms (transform 265ms, setup 0ms, import 428ms, tests 101ms, environment 1ms)
+
