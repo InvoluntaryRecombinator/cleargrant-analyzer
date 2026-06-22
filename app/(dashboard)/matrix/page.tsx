@@ -27,16 +27,6 @@ export default async function MatrixPage() {
     },
   });
 
-  const highCount = grants.filter(
-    (grant) => grant.matchResult?.matchLabel === "High Match",
-  ).length;
-  const reviewCount = grants.filter(
-    (grant) => grant.matchResult?.matchLabel === "Needs Review",
-  ).length;
-  const failedCount = grants.filter(
-    (grant) => grant.processingStatus === "failed",
-  ).length;
-
   return (
     <div className="space-y-8">
       <section className="page-header rounded-lg border border-slate-300 bg-slate-100 px-5 py-4 shadow-sm">
@@ -55,24 +45,6 @@ export default async function MatrixPage() {
         >
           Upload grants
         </Link>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-3">
-        <div className="metric-panel compact">
-          <p className="metric-label">High match</p>
-          <p className="metric-value">{highCount}</p>
-          <p className="metric-note">Strong first-pass fit</p>
-        </div>
-        <div className="metric-panel compact">
-          <p className="metric-label">Needs review</p>
-          <p className="metric-value">{reviewCount}</p>
-          <p className="metric-note">Ambiguous or incomplete evidence</p>
-        </div>
-        <div className="metric-panel compact">
-          <p className="metric-label">Extraction failed</p>
-          <p className="metric-value">{failedCount}</p>
-          <p className="metric-note">Unreadable files to replace</p>
-        </div>
       </section>
 
       <section className="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
