@@ -92,16 +92,12 @@ export default async function GrantDetailPage({
 
   return (
     <div className="space-y-8">
-      <section className="page-header">
+      <section className="page-header rounded-lg border border-slate-300 bg-slate-100 px-5 py-4 shadow-sm">
         <div>
           <p className="eyebrow">Grant Detail</p>
           <h1 className="page-title">
             {grant.title ?? grant.sourceFileName ?? "Untitled grant"}
           </h1>
-          <p className="page-description">
-            Extracted requirements are shown with source quotes. This is triage
-            evidence, not an official eligibility determination.
-          </p>
         </div>
         <Link className="secondary-button" href="/matrix">
           Back to matrix
