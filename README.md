@@ -21,12 +21,14 @@ The ClearGrant Analyzer eliminates the hundreds of hours nonprofits waste manual
 ClearGrant operates on a BYOK model, making the platform essentially free to host while keeping overhead costs at absolute minimums. 
 * **Cost-Effective:** Because the tool extracts strict JSON data, token usage is incredibly low. A minimum $5.00 API credit balance with OpenAI is more than enough to parse dozens of massive grant documents and engage in hours of AI chat assistance.
 * **Shared Workspace:** Organization members can collaborate in a unified workspace utilizing a single, shared API key.
-* **Enterprise-Grade Encryption:** If using the deployed version, your OpenAI API key is secured on our backend using AES-256-GCM encryption. It is only decrypted in memory during active extraction processes and can be deleted at any time.
+* **Enterprise-Grade Encryption:** If using the deployed version, your OpenAI API key is secured on our backend using AES-256-GCM encryption. It is only decrypted in memory during active extraction processes and can be deleted at any time in your settings.
 
 ### 2. Drag-and-Drop Ingestion
 Bypass manual data entry. ClearGrant supports multi-format ingestion for complete context:
 * **Source Documents:** Upload official PDFs, DOCX files, or RFPs directly to the platform.
 * **Web Snippets:** Paste text directly from foundation solicitation webpages or funding URLs to build compliance profiles instantly.
+<img width="969" height="1067" alt="CG intake" src="https://github.com/user-attachments/assets/03bbd610-e05b-4da3-a0de-e2d457b56ccc" />
+
 
 ### 3. Automated Extraction & JSON Reconciliation
 Once documents are uploaded, the AI extracts the core eligibility requirements across all texts and files. It automatically handles conflicting or overlapping data, reconciling it into a single, standardized JSON object. This unified data structure drives the entire application, populating both the high-level Comparison Matrix and the detailed individual grant pages.
@@ -34,12 +36,15 @@ Once documents are uploaded, the AI extracts the core eligibility requirements a
 ### 4. Interactive Comparison Matrix & Grant Details
 * **The Matrix:** View all uploaded opportunities at a glance. Opportunities are mapped against your organization's established profile to determine a real-time compliance match.
 * **Grant Detail Views:** Click on any grant opportunity name in the Comparison Matrix to access its dedicated information page, which displays the extracted requirements in a clean, scannable format.
+<img width="859" height="1024" alt="CG matric" src="https://github.com/user-attachments/assets/4fe3bf61-582d-419e-878a-21e04fdc2afe" />
+
 
 ### 5. Context-Aware AI Chat Assistant
 Every individual grant page features an embedded AI assistant loaded with the specific context of that opportunity and your organizational profile.
 * Chat directly with the document to clarify complex legal phrasing.
 * Ask the AI to explain exactly *why* an opportunity was flagged as a specific match level.
 * Inquire about specific actionable steps your organization can take to bridge compliance gaps.
+<img width="791" height="1024" alt="CG chat" src="https://github.com/user-attachments/assets/be354ab7-c9c0-4d43-ace6-10781ae68127" />
 
 ---
 
