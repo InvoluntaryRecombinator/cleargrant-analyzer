@@ -5,7 +5,7 @@
   # ClearGrant Analyzer
   **An intelligent, AI-driven grant evaluation and compliance matrix for grassroots nonprofits.**
 
-  [View Live Demo on Vercel](https://your-cleargrant-link.vercel.app)
+  [View Live Demo on Vercel](https://cleargrant-analyzer-omaq2q2ri-involuntaryrecombinators-projects.vercel.app/matrix)
 </div>
 
 ---
