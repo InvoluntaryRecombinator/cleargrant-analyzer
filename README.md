@@ -77,7 +77,7 @@ ClearGrant is built with a modern, type-safe stack designed for speed and secure
 You can use ClearGrant either via the [Live Deployment](https://your-cleargrant-link.vercel.app) or by running it locally on your machine.
 
 ### Option A: Using the Deployed App
-If using the live link, simply create an account, navigate to the **Settings** page, and input your OpenAI API key to begin extracting documents. Your key is encrypted in the database and can be removed at any time.
+If using the live link, simply create an account, navigate to the **Settings** page, and input your OpenAI API key to begin extracting documents. The API key you provide is encrypted in the database and can be removed at any time.
 
 ### Option B: Running Locally
 For local development, the app bypasses the UI BYOK settings and reads your API key directly from your local environment variables.
