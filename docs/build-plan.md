@@ -13,13 +13,14 @@ Build the complete, end-to-end extraction pipeline immediately. Use OpenAI's Str
 4. Add authentication and protected layout.
 5. Create global nav shell: Home, Upload Grants, Matrix Dashboard, Manage Profile, Logout.
 
+
 **Phase 2: The User Profile**
 6. Build the onboarding/profile questionnaire form.
 7. Save structured user profile data to the database.
 
 **Phase 3: The Engine (STRICT TDD REQUIRED)**
-8. **EXECUTE HEADLESS TDD LOOP:** - You must build the deterministic matching logic (`utils/matchGrantToProfile`) using strict TDD.
-   - Write the failing Vitest test -> run `npx vitest run > docs/tdd/logs/matcher-red.txt` -> write implementation -> run `npx vitest run > docs/tdd/logs/matcher-green.txt`.
+8. **EXECUTE HEADLESS TDD LOOP:** - You must build the deterministic matching logic and other tools that control meaningful data (`utils/matchGrantToProfile`) using strict TDD.
+   - Write the failing Vitest test -> run `npx vitest run > docs/tdd/logs/matcher-red.txt` -> write an implementation to pass the exact same test wihtout augmenting the test -> run `npx vitest run > docs/tdd/logs/matcher-green.txt`.
    - **CRITICAL:** Immediately run `git add .` and `git commit -m "test(tdd): implement match logic with red/green logs"`.
 
 **Phase 4: The Pipeline**
